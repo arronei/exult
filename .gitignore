@@ -19,6 +19,7 @@ gamedat
 exult.spec
 Exult.suo
 exult*.tar.gz
+blackgate/
 conf/confregress
 content/*/build/*
 content/bg/usecode
