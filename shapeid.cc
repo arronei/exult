@@ -576,7 +576,7 @@ uint8* ShapeID::Get_palette_transform_table(uint8 table[256]) const {
 
 		int remaps[32];
 
-		if (from > std::size(remaps) - 1 && from != 255) {
+		if (from >= std::size(remaps) - 1 && from != 255) {
 			return nullptr;
 		}
 		for (unsigned int i = 0; i < std::size(remaps); i++) {

@@ -231,7 +231,7 @@ Game_object* Gump::find_object(
 		if (box.has_point(mx, my)) {
 			s = obj->get_shape();
 			get_shape_location(obj, ox, oy);
-			if (s->has_point(mx - ox, my - oy)) {
+			if (s->has_point(mx - ox, my - oy) && cnt < 100) {
 				list[cnt++] = obj;
 			}
 		}

@@ -1610,7 +1610,7 @@ Usecode_value Usecode_internal::call_intrinsic(
 	} else {
 		table = intrinsics_bg;
 	}
-	if (static_cast<size_t>(intrinsic) <= table.size()) {
+	if (static_cast<size_t>(intrinsic) < table.size()) {
 		auto&                    table_entry = table[intrinsic];
 		const UsecodeIntrinsicFn func        = table_entry.func;
 		const char*              name        = table_entry.name;

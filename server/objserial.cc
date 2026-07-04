@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "servemsg.h"
 
+#include <algorithm>
 #include <cstring>
 
 /*
@@ -49,9 +50,12 @@ Serial_out& Serial_out::operator<<(std::string& s) {
  */
 Serial_in& Serial_in::operator<<(std::string& s) {
 	uint32_t len;
-	(*this) << len;                                       // Get length.
-	s.assign(reinterpret_cast<const char*>(buf), len);    // Set string.
-	buf += len;
+	(*this) << len;    // Get length (fully attacker-controlled).
+	// Never trust 'len' past the bytes we actually still have.
+	const size_t remaining = buf <= end ? static_cast<size_t>(end - buf) : 0;
+	const size_t safe_len  = std::min<size_t>(len, remaining);
+	s.assign(reinterpret_cast<const char*>(buf), safe_len);    // Set string.
+	buf += safe_len;
 	return *this;
 }
 
@@ -201,7 +205,7 @@ bool Object_in(
 		int& tx, int& ty, int& tz,       // Absolute tile coords.
 		int& shape, int& frame, int& quality, std::string& name) {
 	const unsigned char* ptr = data;
-	Serial_in            io(ptr);
+	Serial_in            io(ptr, data + datalen);
 	Object_io(io, addr, tx, ty, tz, shape, frame, quality, name);
 	return (ptr - data) == datalen;
 }
@@ -237,7 +241,7 @@ bool Container_in(
 		int& tx, int& ty, int& tz,          // Absolute tile coords.
 		int& shape, int& frame, int& quality, std::string& name, unsigned char& resistance, bool& invisible, bool& okay_to_take) {
 	const unsigned char* ptr = data;
-	Serial_in            io(ptr);
+	Serial_in            io(ptr, data + datalen);
 	Container_io(io, addr, tx, ty, tz, shape, frame, quality, name, resistance, invisible, okay_to_take);
 	return (ptr - data) == datalen;
 }
@@ -273,7 +277,7 @@ bool Barge_object_in(
 		int& tx, int& ty, int& tz,       // Absolute tile coords.
 		int& shape, int& frame, int& xtiles, int& ytiles, int& dir) {
 	const unsigned char* ptr = data;
-	Serial_in            io(ptr);
+	Serial_in            io(ptr, data + datalen);
 	Barge_object_io(io, addr, tx, ty, tz, shape, frame, xtiles, ytiles, dir);
 	return (ptr - data) == datalen;
 }
@@ -313,7 +317,7 @@ bool Egg_object_in(
 		int& shape, int& frame, int& type, int& criteria, int& probability, int& distance, bool& nocturnal, bool& once,
 		bool& hatched, bool& auto_reset, int& data1, int& data2, int& data3, std::string& str1) {
 	const unsigned char* ptr = data;
-	Serial_in            io(ptr);
+	Serial_in            io(ptr, data + datalen);
 	Egg_object_io(
 			io, addr, tx, ty, tz, shape, frame, type, criteria, probability, distance, nocturnal, once, hatched, auto_reset, data1,
 			data2, data3, str1);
@@ -367,7 +371,7 @@ bool Npc_actor_in(
 		Serial_schedule* schedules         // Schedule changes.  Room for 8.
 ) {
 	const unsigned char* ptr = data;
-	Serial_in            io(ptr);
+	Serial_in            io(ptr, data + datalen);
 	Npc_actor_io(
 			io, addr, tx, ty, tz, shape, frame, face, name, npc_num, ident, usecode, usecodefun, properties, attack_mode, alignment,
 			oflags, xflags, type_flags, num_schedules, schedules);
@@ -433,7 +437,7 @@ bool Game_info_in(
 		int&                 edit_mode        // Mode we're in.
 ) {
 	const unsigned char* ptr = data;
-	Serial_in            io(ptr);
+	Serial_in            io(ptr, data + datalen);
 	Game_info_io(io, version, edit_lift, hide_lift, map_editing, tile_grid, map_modified, edit_mode);
 	return (ptr - data) == datalen;
 }

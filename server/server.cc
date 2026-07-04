@@ -555,7 +555,7 @@ static void Handle_client_message(int& fd    // Socket to client.  May be closed
 		break;
 	}
 	case Exult_server::cont_show_gump: {
-		Serial_in io(ptr);
+		Serial_in io(ptr, data + datalen);
 		uintptr   addr;
 		io << addr;
 		auto* p   = reinterpret_cast<Game_object*>(addr);

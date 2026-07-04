@@ -61,9 +61,10 @@ public:
  */
 class Serial_in {
 	const unsigned char*& buf;
+	const unsigned char*  end;
 
 public:
-	Serial_in(const unsigned char*& b) : buf(b) {}
+	Serial_in(const unsigned char*& b, const unsigned char* e) : buf(b), end(e) {}
 
 	template <typename T>
 	Serial_in& operator<<(T& v) {
