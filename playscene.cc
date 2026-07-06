@@ -45,6 +45,8 @@ namespace {
 				return std::stoi(parts[index]);
 			} catch (const std::invalid_argument&) {
 				std::cerr << "Invalid integer at index " << index << ", using default value: " << default_value << std::endl;
+			} catch (const std::out_of_range&) {
+				std::cerr << "Out-of-range integer at index " << index << ", using default value: " << default_value << std::endl;
 			}
 		}
 		return default_value;
@@ -282,10 +284,10 @@ bool ScenePlayer::parse_text_section(const string& content, TextSection& section
 				continue;
 			}
 
-			int index     = std::stoi(parts[1]);
-			int font_type = std::stoi(parts[2]);    // 0=CREDITS_FONT, 1=HOT_FONT
-			int color     = std::stoi(parts[3]);    // Color index
-			int mode      = std::stoi(parts[4]);    // 0=scroll, 1=delay(default), >1=delay(ms)
+			int index     = safe_stoi(parts, 1);
+			int font_type = safe_stoi(parts, 2);    // 0=CREDITS_FONT, 1=HOT_FONT
+			int color     = safe_stoi(parts, 3);    // Color index
+			int mode      = safe_stoi(parts, 4);    // 0=scroll, 1=delay(default), >1=delay(ms)
 
 			string text_content;
 			if (!load_text_from_flx(index, text_content)) {

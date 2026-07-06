@@ -108,7 +108,7 @@ C_EXPORT void on_npc_show_gump_clicked(GtkButton* btn, gpointer user_data) {
 	// Get container address.
 	auto addr = reinterpret_cast<uintptr>(g_object_get_data(G_OBJECT(gtk_widget_get_toplevel(GTK_WIDGET(btn))), "user_data"));
 	unsigned char* ptr = &data[0];
-	Serial_out     io(ptr);
+	Serial_out     io(ptr, data + Exult_server::maxlength);
 	io << addr;
 
 	ExultStudio::get_instance()->send_to_server(Exult_server::cont_show_gump, data, ptr - data);

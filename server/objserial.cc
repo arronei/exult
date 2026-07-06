@@ -39,9 +39,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 Serial_out& Serial_out::operator<<(std::string& s) {
 	const char*    str = s.c_str();
 	const uint32_t len = std::strlen(str);    // Get length.
-	*this << len;                             // First the length.
-	std::memcpy(buf, str, len);               // Then the bytes.
-	buf += len;
+	*this << len;                             // First the length (bounds-checked above).
+	// Never write more bytes than the caller-supplied buffer has room for.
+	const size_t remaining = buf <= end ? static_cast<size_t>(end - buf) : 0;
+	const size_t safe_len  = std::min<size_t>(len, remaining);
+	std::memcpy(buf, str, safe_len);    // Then the bytes.
+	buf += safe_len;
 	return *this;
 }
 
@@ -187,7 +190,7 @@ int Object_out(
 		int shape, int frame, int quality, std::string name) {
 	static unsigned char buf[Exult_server::maxlength];
 	unsigned char*       ptr = &buf[0];
-	Serial_out           io(ptr);
+	Serial_out           io(ptr, buf + Exult_server::maxlength);
 	Object_io(io, addr, tx, ty, tz, shape, frame, quality, name);
 	return Exult_server::Send_data(fd, id, buf, ptr - buf);
 }
@@ -223,7 +226,7 @@ int Container_out(
 		int shape, int frame, int quality, std::string name, unsigned char resistance, bool invisible, bool okay_to_take) {
 	static unsigned char buf[Exult_server::maxlength];
 	unsigned char*       ptr = &buf[0];
-	Serial_out           io(ptr);
+	Serial_out           io(ptr, buf + Exult_server::maxlength);
 	Container_io(io, addr, tx, ty, tz, shape, frame, quality, name, resistance, invisible, okay_to_take);
 	return Exult_server::Send_data(fd, Exult_server::container, buf, ptr - buf);
 }
@@ -259,7 +262,7 @@ int Barge_object_out(
 		int shape, int frame, int xtiles, int ytiles, int dir) {
 	static unsigned char buf[Exult_server::maxlength];
 	unsigned char*       ptr = &buf[0];
-	Serial_out           io(ptr);
+	Serial_out           io(ptr, buf + Exult_server::maxlength);
 	Barge_object_io(io, addr, tx, ty, tz, shape, frame, xtiles, ytiles, dir);
 	return Exult_server::Send_data(fd, Exult_server::barge, buf, ptr - buf);
 }
@@ -296,7 +299,7 @@ int Egg_object_out(
 		bool auto_reset, int data1, int data2, int data3, std::string str1) {
 	static unsigned char buf[Exult_server::maxlength];
 	unsigned char*       ptr = &buf[0];
-	Serial_out           io(ptr);
+	Serial_out           io(ptr, buf + Exult_server::maxlength);
 	Egg_object_io(
 			io, addr, tx, ty, tz, shape, frame, type, criteria, probability, distance, nocturnal, once, hatched, auto_reset, data1,
 			data2, data3, str1);
@@ -344,7 +347,7 @@ int Npc_actor_out(
 ) {
 	static unsigned char buf[Exult_server::maxlength];
 	unsigned char*       ptr = &buf[0];
-	Serial_out           io(ptr);
+	Serial_out           io(ptr, buf + Exult_server::maxlength);
 	Npc_actor_io(
 			io, addr, tx, ty, tz, shape, frame, face, name, npc_num, ident, usecode, usecodefun, properties, attack_mode, alignment,
 			oflags, xflags, type_flags, num_schedules, schedules);
@@ -414,7 +417,7 @@ int Game_info_out(
 ) {
 	static unsigned char buf[Exult_server::maxlength];
 	unsigned char*       ptr = &buf[0];
-	Serial_out           io(ptr);
+	Serial_out           io(ptr, buf + Exult_server::maxlength);
 	Game_info_io(io, version, edit_lift, hide_lift, map_editing, tile_grid, map_modified, edit_mode);
 	return Exult_server::Send_data(fd, Exult_server::info, buf, ptr - buf);
 }

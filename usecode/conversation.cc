@@ -534,7 +534,8 @@ void Conversation::show_avatar_choices(int num_choices, char** choices) {
 	for (int i = 0; i < num_choices; i++) {
 		char text[256];
 		text[0] = 127;    // A circle.
-		strcpy(&text[1], choices[i]);
+		strncpy(&text[1], choices[i], sizeof(text) - 2);
+		text[sizeof(text) - 1] = 0;
 		const int width = sman->get_text_width(0, text);
 		if (x > 0 && x + width >= tbox.w) {
 			// Start a new line.
@@ -556,7 +557,8 @@ void Conversation::show_avatar_choices(int num_choices, char** choices) {
 	for (int i = 0; i < num_choices; i++) {
 		char text[256];
 		text[0] = 127;    // A circle.
-		strcpy(&text[1], choices[i]);
+		strncpy(&text[1], choices[i], sizeof(text) - 2);
+		text[sizeof(text) - 1] = 0;
 		sman->paint_text(0, text, conv_choices[i].x, conv_choices[i].y);
 	}
 	avatar_face.enlarge((3 * c_tilesize) / 4);    // Encloses entire area.

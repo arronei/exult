@@ -225,8 +225,12 @@ int playfli::play(Image_window* win, int first_frame, int last_frame, unsigned l
 							fli_buf->fill_hline8(data, pix_count, pix_pos, skip_lines + line);
 							pix_pos += pix_count;
 						} else {
-							fli_data.read(pixbuf.data(), size_count);
-							fli_buf->copy_hline8(pixbuf.data(), size_count, pix_pos, skip_lines + line);
+							const int copy_count = std::min<int>(size_count, static_cast<int>(pixbuf.size()));
+							fli_data.read(pixbuf.data(), copy_count);
+							if (copy_count < size_count) {
+								fli_data.skip(size_count - copy_count);
+							}
+							fli_buf->copy_hline8(pixbuf.data(), copy_count, pix_pos, skip_lines + line);
 							pix_pos += size_count;
 						}
 					}
@@ -239,18 +243,25 @@ int playfli::play(Image_window* win, int first_frame, int last_frame, unsigned l
 				break;
 
 			case FLI_BRUN: {
+				auto* const pixbuf_end = pixbuf.data() + pixbuf.size();
 				for (int line = 0; line < fli_height; line++) {
 					const int packets = fli_data.read1();
 					auto*     pix_pos = pixbuf.data();
 					for (int p_count = 0; p_count < packets; p_count++) {
 						const int size_count = static_cast<sint8>(fli_data.read1());
+						const int room = static_cast<int>(pixbuf_end - pix_pos);
 						if (size_count > 0) {
-							const auto data = static_cast<uint8>(fli_data.read1());
-							pix_pos         = std::fill_n(pix_pos, size_count, data);
+							const auto data       = static_cast<uint8>(fli_data.read1());
+							const int  fill_count = std::min(size_count, room);
+							pix_pos                = std::fill_n(pix_pos, fill_count, data);
 						} else {
-							const int pix_count = std::abs(size_count);
-							fli_data.read(pix_pos, pix_count);
-							pix_pos += pix_count;
+							const int pix_count  = std::abs(size_count);
+							const int copy_count = std::min(pix_count, room);
+							fli_data.read(pix_pos, copy_count);
+							if (copy_count < pix_count) {
+								fli_data.skip(pix_count - copy_count);
+							}
+							pix_pos += copy_count;
 						}
 					}
 					fli_buf->copy_hline8(pixbuf.data(), fli_width, 0, line);
@@ -288,17 +299,22 @@ int playfli::play(Image_window* win, int first_frame, int last_frame, unsigned l
 						pix_pos += skip_count;
 						const int size_count = static_cast<sint8>(fli_data.read1());
 						if (size_count < 0) {
-							const uint16 data       = fli_data.read2();
-							auto*        pixptr     = pixbuf.data();
-							const int    word_count = std::abs(size_count);
-							for (int i = 0; i < word_count; i++) {
+							const uint16 data        = fli_data.read2();
+							const int    word_count  = std::abs(size_count);
+							const int    safe_words  = std::min(word_count, static_cast<int>(pixbuf.size()) / 2);
+							auto*        pixptr      = pixbuf.data();
+							for (int i = 0; i < safe_words; i++) {
 								little_endian::Write2(pixptr, data);
 							}
-							fli_buf->copy_hline8(pixbuf.data(), 2 * word_count, pix_pos, line);
+							fli_buf->copy_hline8(pixbuf.data(), 2 * safe_words, pix_pos, line);
 							pix_pos += 2 * word_count;
 						} else {
-							fli_data.read(pixbuf.data(), 2 * size_count);
-							fli_buf->copy_hline8(pixbuf.data(), 2 * size_count, pix_pos, line);
+							const int copy_count = std::min(2 * size_count, static_cast<int>(pixbuf.size()));
+							fli_data.read(pixbuf.data(), copy_count);
+							if (copy_count < 2 * size_count) {
+								fli_data.skip(2 * size_count - copy_count);
+							}
+							fli_buf->copy_hline8(pixbuf.data(), copy_count, pix_pos, line);
 							pix_pos += 2 * size_count;
 						}
 					}

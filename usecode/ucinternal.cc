@@ -1905,6 +1905,9 @@ int Usecode_internal::run() {
 			if (frame->ip + get_opcode_length(static_cast<int>(opcode)) > frame->endp) {
 				cerr << "Operands lie outside of code segment. ";
 				CERR_CURRENT_IP();
+				Usecode_value msg("Out of bounds usecode execution!");
+				abort_function(msg);
+				frame_changed = true;
 				continue;
 			}
 

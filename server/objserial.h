@@ -31,19 +31,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <string>
 
 class Serial_out {
-	unsigned char*& buf;
+	unsigned char*&      buf;
+	const unsigned char* end;
 
 public:
-	Serial_out(unsigned char*& b) : buf(b) {}
+	Serial_out(unsigned char*& b, const unsigned char* e) : buf(b), end(e) {}
 
 	template <typename T>
 	Serial_out& operator<<(T v) {
-		little_endian::WriteN(buf, v);
+		// Never write past the caller-supplied buffer's capacity.
+		if (buf + sizeof(T) <= end) {
+			little_endian::WriteN(buf, v);
+		}
 		return *this;
 	}
 
 	Serial_out& operator<<(bool v) {
-		Write1(buf, (v ? 1 : 0));
+		if (buf + 1 <= end) {
+			Write1(buf, (v ? 1 : 0));
+		}
 		return *this;
 	}
 

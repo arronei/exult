@@ -58,6 +58,10 @@ namespace Pentagram {
 
 			case 1:
 				COUT("Sound data");
+				if (data_offset + 5 > size_) {
+					last_chunk = true;
+					continue;
+				}
 				l = (buffer[2 + data_offset]) << 16;
 				l |= (buffer[1 + data_offset]) << 8;
 				l |= (buffer[0 + data_offset]);
@@ -87,6 +91,10 @@ namespace Pentagram {
 				break;
 			case 2:
 				COUT("Sound continues");
+				if (data_offset + 3 > size_) {
+					last_chunk = true;
+					continue;
+				}
 				l = (buffer[2 + data_offset]) << 16;
 				l |= (buffer[1 + data_offset]) << 8;
 				l |= (buffer[0 + data_offset]);
@@ -96,6 +104,10 @@ namespace Pentagram {
 				break;
 			case 3:
 				COUT("Silence");
+				if (data_offset + 3 > size_) {
+					last_chunk = true;
+					continue;
+				}
 				l = (buffer[1 + data_offset]) << 8;
 				l |= (buffer[0 + data_offset]);
 				l++;
@@ -116,6 +128,10 @@ namespace Pentagram {
 
 			default:
 				COUT("Other chunk type");
+				if (data_offset + 3 > size_) {
+					last_chunk = true;
+					continue;
+				}
 				l = (buffer[2 + data_offset]) << 16;
 				l |= (buffer[1 + data_offset]) << 8;
 				l |= (buffer[0 + data_offset]);
@@ -225,7 +241,7 @@ namespace Pentagram {
 	bool VocAudioSample::advanceChunk(void* DecompData) const {
 		auto* decomp = static_cast<VocDecompData*>(DecompData);
 
-		if (decomp->pos == buffer_limit) {
+		if (decomp->pos >= buffer_limit) {
 			return false;
 		}
 
@@ -238,6 +254,9 @@ namespace Pentagram {
 			return false;
 
 		case 1:    // Sound data
+			if (decomp->pos + 5 > buffer_limit) {
+				return false;
+			}
 			l = (buffer[2 + decomp->pos]) << 16;
 			l |= (buffer[1 + decomp->pos]) << 8;
 			l |= (buffer[0 + decomp->pos]);
@@ -249,19 +268,25 @@ namespace Pentagram {
 			}
 
 			l -= 2;
-			chunk_length = l;
+			chunk_length = min(l, static_cast<size_t>(buffer_limit) - decomp->pos - 2);
 			decomp->pos += 2;
 			break;
 
 		case 2:    // Sound continue
+			if (decomp->pos + 3 > buffer_limit) {
+				return false;
+			}
 			l = (buffer[2 + decomp->pos]) << 16;
 			l |= (buffer[1 + decomp->pos]) << 8;
 			l |= (buffer[0 + decomp->pos]);
 			decomp->pos += 3;
-			chunk_length = l;
+			chunk_length = min(l, static_cast<size_t>(buffer_limit) - decomp->pos);
 			break;
 
 		case 3:    // Silence
+			if (decomp->pos + 3 > buffer_limit) {
+				return false;
+			}
 			l = (buffer[1 + decomp->pos]) << 8;
 			l |= (buffer[0 + decomp->pos]);
 			l++;
@@ -271,6 +296,9 @@ namespace Pentagram {
 
 			// Skip all other chunk types
 		default:
+			if (decomp->pos + 3 > buffer_limit) {
+				return false;
+			}
 			l = (buffer[2 + decomp->pos]) << 16;
 			l |= (buffer[1 + decomp->pos]) << 8;
 			l |= (buffer[0 + decomp->pos]);

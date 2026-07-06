@@ -229,7 +229,7 @@ namespace {
 			size_t   len;
 			auto     buf = pal_obj.retrieve(len);
 			if (buf && len >= palette.size()) {
-				std::copy_n(palette.begin(), palette.size(), buf.get());
+				std::copy_n(buf.get(), palette.size(), palette.begin());
 				std::cout << "Using palette from file: " << paletteFile << std::endl;
 			} else {
 				std::cerr << "Warning: Could not load palette file, using default" << std::endl;

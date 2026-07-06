@@ -284,7 +284,7 @@ void Usecode_value::print(ostream& out, bool shortformat) const {
 		}
 		break;
 	case class_obj_type:
-		print_array(clsrefval.elems, clsrefval.cnt);
+		print_array(clsrefval.elems.get(), clsrefval.cnt);
 		break;
 	default:
 		break;
@@ -490,9 +490,9 @@ bool Usecode_value::restore(IDataSource* in) {
 		// This will duplicate the instance variables, and they will no
 		// longer point to the same instance.
 		// Need to deserialize this properly.
-		const int len   = in->read2();
-		clsrefval.cnt   = len;    // Stores class, class vars.
-		clsrefval.elems = new Usecode_value[clsrefval.cnt];
+		const int len = in->read2();
+		new (&clsrefval)
+				ClassRef{std::shared_ptr<Usecode_value[]>(new Usecode_value[len]), static_cast<short>(len)};
 		for (int i = 0; i < len; i++) {
 			if (!clsrefval.elems[i].restore(in)) {
 				return false;
@@ -515,14 +515,15 @@ ostream& operator<<(ostream& out, Usecode_value& val) {
  */
 void Usecode_value::class_new(Usecode_class_symbol* cls, int nvars) {
 	assert(type == int_type);
-	type               = class_obj_type;
-	clsrefval.cnt      = nvars + 1;    // Stores class, class vars.
-	clsrefval.elems    = new Usecode_value[clsrefval.cnt];
+	type = class_obj_type;
+	new (&clsrefval) ClassRef{
+			std::shared_ptr<Usecode_value[]>(new Usecode_value[nvars + 1]), static_cast<short>(nvars + 1)};
 	clsrefval.elems[0] = Usecode_value(cls);
 }
 
 void Usecode_value::class_delete() {
 	assert(type == class_obj_type);
-	delete[] clsrefval.elems;
+	// Just releases this copy's reference; the shared array is actually
+	// freed once the last live Usecode_value copy of it is gone.
 	*this = Usecode_value(0);
 }

@@ -50,7 +50,7 @@ int Stack_frame_out(
 		Usecode_value* locals) {
 	static unsigned char buf[Exult_server::maxlength];
 	unsigned char*       ptr = &buf[0];
-	Serial_out           io(ptr);
+	Serial_out           io(ptr, buf + Exult_server::maxlength);
 	Stack_frame_io<Serial_out>(io, functionid, ip, call_chain, call_depth, eventid, caller_item, num_args, num_vars);
 	OBufferDataSpan ds(buf, Exult_server::maxlength);
 	ds.seek(ptr - buf);

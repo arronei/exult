@@ -4244,7 +4244,11 @@ void Sew_schedule::now_what() {
 			state = get_wool;
 			break;
 		}
-		Game_object*     work_table_obj = npc->find_closest(971);
+		Game_object* work_table_obj = npc->find_closest(971);
+		if (!work_table_obj) {
+			state = done;
+			break;
+		}
 		const Tile_coord tpos           = work_table_obj->get_tile() + Tile_coord(1, -2, 0);
 		Actor_action*    pact           = Path_walking_actor_action::create_path(npcpos, tpos, cost);
 		signed char      frames[5];
@@ -4317,7 +4321,11 @@ void Sew_schedule::now_what() {
 	case get_clothes: {
 		const Game_object_shared cloth_obj = cloth.lock();
 		if (cloth_obj) {
-			Game_object*     work_table_obj = npc->find_closest(971);
+			Game_object* work_table_obj = npc->find_closest(971);
+			if (!work_table_obj) {
+				state = done;
+				break;
+			}
 			const Tile_coord tpos           = work_table_obj->get_tile() + Tile_coord(1, -2, 0);
 			Actor_action*    pact           = Path_walking_actor_action::create_path(npcpos, tpos, cost);
 			if (pact) {

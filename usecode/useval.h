@@ -29,6 +29,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <memory>
 #include <new>
 #include <string>    // STL string
 #include <vector>    // STL container
@@ -53,8 +54,11 @@ public:
 
 private:
 	struct ClassRef {
-		Usecode_value* elems;
-		short          cnt;
+		// Shared (not owned outright) since multiple Usecode_value copies of
+		// the same class instance can be alive at once; the array is freed
+		// only when the last copy is destroyed or class_delete()'d.
+		std::shared_ptr<Usecode_value[]> elems;
+		short                            cnt;
 	};
 
 	Val_type type = int_type;    // Type stored here.
@@ -84,6 +88,9 @@ private:
 			break;
 		case pointer_type:
 			ptrval.~Game_object_shared();
+			break;
+		case class_obj_type:
+			clsrefval.~ClassRef();
 			break;
 		default:
 			break;

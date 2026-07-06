@@ -1145,7 +1145,7 @@ int XMidiFile::ConvertEvent(const int time, const unsigned char status, IDataSou
 
 	// Volume modify the volume controller, only if converting
 	if (convert_type && current->getStatusType() == MidiStatus::Controller && current->data[0] == 7) {
-		current->data[1] = VolumeCurve[current->data[1]];
+		current->data[1] = VolumeCurve[current->data[1] & 0x7F];
 	}
 
 	return 2;
@@ -1165,7 +1165,7 @@ int XMidiFile::ConvertNote(const int time, const unsigned char status, IDataSour
 
 	// Volume modify the note on's, only if converting
 	if (convert_type && current->getStatusType() == MidiStatus::NoteOn && current->data[1]) {
-		current->data[1] = VolumeCurve[current->data[1]];
+		current->data[1] = VolumeCurve[current->data[1] & 0x7F];
 	}
 
 	// Perc track note on
