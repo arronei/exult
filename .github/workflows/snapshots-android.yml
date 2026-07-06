@@ -126,8 +126,19 @@ jobs:
           rm -r -f sdl-src
           df -h
           
-      - name: Sign APK
+      - name: Check signing secrets
+        id: signing_check
         if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
+        env:
+          SIGNING_KEY: ${{ secrets.ANDROID_SIGNING_KEY }}
+        run: |
+          if [ -n "$SIGNING_KEY" ]; then
+            echo "has_key=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_key=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Sign APK
+        if: ${{ steps.activity_check.outputs.repo_alive == 'true' && steps.signing_check.outputs.has_key == 'true' }}
         uses: noriban/sign-android-release@v5.1
         id: sign_app
         with:
@@ -138,7 +149,13 @@ jobs:
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
       - name: Save release artifact
         if: ${{ steps.activity_check.outputs.repo_alive == 'true' }}
-        run: cp ${{steps.sign_app.outputs.signedReleaseFile}} ./android-snapshot/exult-snapshot-signed.apk
+        run: |
+          if [ -n "${{ steps.sign_app.outputs.signedReleaseFile }}" ]; then
+            cp "${{ steps.sign_app.outputs.signedReleaseFile }}" ./android-snapshot/exult-snapshot-signed.apk
+          else
+            echo "No signing secrets configured (fork build?) - saving unsigned APK instead"
+            cp ./../build/android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk ./android-snapshot/exult-snapshot-unsigned.apk
+          fi
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
