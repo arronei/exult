@@ -335,3 +335,5 @@ android/lib/build/
 docs/xml/web_tmp/docs.html
 docs/xml/web_tmp/faq.html
 docs/xml/web_tmp/studio.html
+
+/graphify-out
