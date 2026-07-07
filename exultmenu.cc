@@ -171,21 +171,30 @@ void create_scroller_menu(
 	const std::array menuscroller{Strings::FIRST(), Strings::PREVIOUS(), Strings::NEXT(), Strings::LAST()};
 	assert(menuscroller.size() == 4);
 	const int max_width = maximum_size(font, menuscroller, xpos);
-	xpos                = xpos - max_width * 3 / 2;
 
 	num_choices--;
 	const int lastpage = num_choices - num_choices % pagesize;
 
+	// Which entries are needed on this page:
+	const std::array<bool, 4> show{
+			first != 0 && first != pagesize, first != 0, lastpage != first,
+			lastpage != first && lastpage != first + pagesize};
+	int visible = 0;
+	for (const bool v : show) {
+		visible += v;
+	}
+	// Recenter around xpos using only the visible entries, so pages with
+	// fewer buttons (e.g. only NEXT/LAST, or only PREVIOUS) stay centered.
+	xpos -= (visible - 1) * max_width / 2;
+
 	for (size_t i = 0; i < menuscroller.size(); i++) {
-		// Check to see if this entry is needed at all:
-		if ((i >= 2 || first != 0) && (i != 0 || first != pagesize) && (i < 2 || lastpage != first)
-			&& (i != 3 || lastpage != first + pagesize)) {
+		if (show[i]) {
 			auto* entry = new MenuTextEntry(fonton, font, menuscroller[i], xpos, ypos);
 			// These commands have negative ids:
 			entry->set_id(i - 8);
 			menu->add_entry(entry);
+			xpos += max_width;
 		}
-		xpos += max_width;
 	}
 }
 
@@ -255,22 +264,31 @@ void ExultMenu::setup() {
 std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
 	auto menu = std::make_unique<MenuList>();
 
-	int          ypos = 15 + gwin->get_win()->get_start_y();
-	Shape_frame* fr   = exult_flx.get_shape(EXULT_FLX_SFX_ICON_SHP, 0);
+	Shape_frame* fr = exult_flx.get_shape(EXULT_FLX_SFX_ICON_SHP, 0);
 	if (fr == nullptr) {
 		std::cerr << "Exult.flx file is corrupted. Please reinstall Exult." << std::endl;
 		throw quit_exception();
 	}
-	int                      xpos        = (gwin->get_width() / 2 + fr->get_width()) / 2;
+	Shape_frame* logo = exult_flx.get_shape(EXULT_FLX_EXULT_LOGO_SHP, 1);
+	int          ypos = centery + logo->get_height() / 2 + 15;
+
 	std::vector<ModManager>& game_list   = gamemanager->get_game_list();
 	const int                num_choices = game_list.size();
-	if (num_choices == 1) {
-		Shape_frame* logo = exult_flx.get_shape(EXULT_FLX_EXULT_LOGO_SHP, 1);
-		ypos              = (centery + logo->get_height() / 2 + gwin->get_win()->get_end_y()) / 2;
-	}
 	const int last = num_choices > first + pagesize ? first + pagesize : num_choices;
+
+	// Fixed column spacing based on the widest visible entry, so columns
+	// stay snug instead of stretching apart on higher game resolutions.
+	int max_entry_width = 0;
 	for (int i = first; i < last; i++) {
-		const int         menux     = num_choices == 1 ? centerx : xpos + (i % 2) * gwin->get_width() / 2;
+		const int width = font->get_text_width(game_list[i].get_menu_string().c_str());
+		if (width > max_entry_width) {
+			max_entry_width = width;
+		}
+	}
+	const int col_gap = max_entry_width + fr->get_width() + 40;
+	int       xpos    = centerx - col_gap / 2;
+	for (int i = first; i < last; i++) {
+		const int         menux     = num_choices == 1 ? centerx : xpos + (i % 2) * col_gap;
 		const ModManager& exultgame = game_list[i];
 		const bool have_sfx = Audio::have_config_sfx(exultgame.get_cfgname()) || Audio::have_roland_sfx(exultgame.get_game_type())
 							  || Audio::have_sblaster_sfx(exultgame.get_game_type()) || Audio::have_midi_sfx();
@@ -301,13 +319,14 @@ std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
 			Strings::EXIT()
 #endif
 	};
-	// Space items based on actual text widths with equal gaps.
+	// Space items based on actual text widths with a fixed gap, so spacing
+	// doesn't stretch out on higher game resolutions.
 	int total_text_width = 0;
 	for (const auto* choice : menuchoices) {
 		total_text_width += font->get_text_width(choice);
 	}
 	const int count      = static_cast<int>(menuchoices.size());
-	const int gap        = std::max(16, (gwin->get_width() - total_text_width) / (count + 1));
+	const int gap        = 24;
 	const int total_span = total_text_width + (count - 1) * gap;
 	xpos                 = centerx - total_span / 2;
 	ypos                 = gwin->get_win()->get_end_y() - 3 * font->get_text_height();
@@ -326,18 +345,29 @@ std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
 std::unique_ptr<MenuList> ExultMenu::create_mods_menu(ModManager* selgame, int first) {
 	auto menu = std::make_unique<MenuList>();
 
-	int ypos = 15 + gwin->get_win()->get_start_y();
-	int xpos = gwin->get_width() / 4;
+	Shape_frame* logo = exult_flx.get_shape(EXULT_FLX_EXULT_LOGO_SHP, 1);
+	int          ypos = centery + logo->get_height() / 2 + 15;
 
 	std::vector<ModInfo>& mod_list    = selgame->get_mod_list();
 	const int             num_choices = mod_list.size();
-	if (num_choices == 1) {
-		Shape_frame* logo = exult_flx.get_shape(EXULT_FLX_EXULT_LOGO_SHP, 1);
-		ypos              = (centery + logo->get_height() / 2 + gwin->get_win()->get_end_y()) / 2;
-	}
 	const int last = num_choices > first + pagesize ? first + pagesize : num_choices;
+
+	// Fixed column spacing based on the widest visible entry, so columns
+	// stay snug instead of stretching apart on higher game resolutions.
+	int max_entry_width = 0;
 	for (int i = first; i < last; i++) {
-		const int      menux    = num_choices == 1 ? centerx : xpos + (i % 2) * gwin->get_width() / 2;
+		int width = font->get_text_width(mod_list[i].get_menu_string().c_str());
+		if (!mod_list[i].is_mod_compatible()) {
+			width = std::max(width, font->get_text_width(Strings::WRONGEXULTVERSION()));
+		}
+		if (width > max_entry_width) {
+			max_entry_width = width;
+		}
+	}
+	const int col_gap = max_entry_width + 40;
+	int       xpos    = centerx - col_gap / 2;
+	for (int i = first; i < last; i++) {
+		const int      menux    = num_choices == 1 ? centerx : xpos + (i % 2) * col_gap;
 		const ModInfo& exultmod = mod_list[i];
 		auto*          entry    = new MenuGameEntry(fonton, font, exultmod.get_menu_string().c_str(), nullptr, menux, ypos);
 		entry->set_id(i);
