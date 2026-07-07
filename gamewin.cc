@@ -312,7 +312,7 @@ Game_window::Game_window(
 		  in_dungeon(0), num_npcs1(0), std_delay(c_std_delay), time_stopped(0), special_light(0), theft_warnings(0), theft_cx(255),
 		  theft_cy(255), moving_barge(nullptr), main_actor(nullptr), camera_actor(nullptr), npcs(0), bodies(0), scrolltx(0),
 		  scrollty(0), dirty(0, 0, 0, 0), save_names{}, mouse3rd(false), fastmouse(false), double_click_closes_gumps(false),
-		  text_bg(false), step_tile_delta(8), allow_right_pathfind(2), scroll_with_mouse(false), alternate_drop(false),
+		  text_bg(false), conv_text_centered(true), step_tile_delta(8), allow_right_pathfind(2), scroll_with_mouse(false), alternate_drop(false),
 		  allow_autonotes(false), allow_enhancements(false), in_exult_menu(false), extended_intro(false), load_palette_timer(0),
 		  plasma_start_color(0), plasma_cycle_range(0), skip_lift(255), paint_eggs(false), paint_egg_areas(0), armageddon(false),
 		  walk_in_formation(false), debug(0), blits(0), scrolltx_l(0), scrollty_l(0), scrolltx_lp(0), scrollty_lp(0),
@@ -330,6 +330,9 @@ Game_window::Game_window(
 
 	string str;
 	config->value("config/gameplay/textbackground", text_bg, -1);
+	config->value("config/gameplay/conv_text_centered", str, "yes");
+	conv_text_centered = str == "yes";
+	config->set("config/gameplay/conv_text_centered", conv_text_centered ? "yes" : "no", false);
 	config->value("config/gameplay/mouse3rd", str, "no");
 	if (str == "yes") {
 		mouse3rd = true;

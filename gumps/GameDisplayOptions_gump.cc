@@ -172,6 +172,18 @@ public:
 		return get_text_msg(0x5CC - msg_file_start);
 	}
 
+	static auto TextAlignment_() {
+		return get_text_msg(0x5DB - msg_file_start);
+	}
+
+	static auto Centered() {
+		return get_text_msg(0x5DC - msg_file_start);
+	}
+
+	static auto TopLeft() {
+		return get_text_msg(0x5DD - msg_file_start);
+	}
+
 	static auto Smoothscrolling_() {
 		return get_text_msg(0x5CD - msg_file_start);
 	}
@@ -306,6 +318,11 @@ void GameDisplayOptions_gump::build_buttons() {
 			this, &GameDisplayOptions_gump::toggle_text_bg, std::move(textbgcolor), text_bg,
 			get_button_pos_for_label(Strings::TextBackground_()), yForRow(++y_index), large_size);
 
+	std::vector<std::string> conv_text_alignment_txt = {Strings::TopLeft(), Strings::Centered()};
+	buttons[id_conv_text_centered]                   = std::make_unique<GameDisplayTextToggle>(
+            this, &GameDisplayOptions_gump::toggle_conv_text_centered, std::move(conv_text_alignment_txt), conv_text_centered,
+            get_button_pos_for_label(Strings::TextAlignment_()), yForRow(++y_index), small_size);
+
 	std::vector<std::string> smooth_text = {Strings::No(), "25%", "50%", "75%", "100%"};
 	buttons[id_smooth_scrolling]         = std::make_unique<GameDisplayTextToggle>(
             this, &GameDisplayOptions_gump::toggle_smooth_scrolling, std::move(smooth_text), smooth_scrolling,
@@ -378,8 +395,9 @@ void GameDisplayOptions_gump::load_settings() {
 	paperdolls = false;
 	const string pdolls;
 	paperdolls       = sman->are_paperdolls_enabled();
-	text_bg          = gwin->get_text_bg() + 1;
-	smooth_scrolling = gwin->is_lerping_enabled() / 25;
+	text_bg            = gwin->get_text_bg() + 1;
+	conv_text_centered = gwin->get_conv_text_centered();
+	smooth_scrolling   = gwin->is_lerping_enabled() / 25;
 
 	android_autolaunch = Android_getAutoLaunch ? Android_getAutoLaunch() : 0;
 	config->value("config/gameplay/language", value, "");
@@ -408,7 +426,7 @@ void GameDisplayOptions_gump::load_settings() {
 }
 
 GameDisplayOptions_gump::GameDisplayOptions_gump() : Modal_gump(nullptr, -1) {
-	SetProceduralBackground(TileRect(0, 0, 100, yForRow(13)), -1);
+	SetProceduralBackground(TileRect(0, 0, 100, yForRow(14)), -1);
 
 	for (auto& btn : buttons) {
 		btn.reset();
@@ -416,13 +434,13 @@ GameDisplayOptions_gump::GameDisplayOptions_gump() : Modal_gump(nullptr, -1) {
 
 	// Ok
 	buttons[id_ok] = std::make_unique<GameDisplayOptions_button>(
-			this, &GameDisplayOptions_gump::close, Strings::OK(), 15, yForRow(12), 50);
+			this, &GameDisplayOptions_gump::close, Strings::OK(), 15, yForRow(13), 50);
 	// Help
 	buttons[id_help] = std::make_unique<GameDisplayOptions_button>(
-			this, &GameDisplayOptions_gump::help, Strings::HELP(), 50, yForRow(12), 50);
+			this, &GameDisplayOptions_gump::help, Strings::HELP(), 50, yForRow(13), 50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<GameDisplayOptions_button>(
-			this, &GameDisplayOptions_gump::cancel, Strings::CANCEL(), 75, yForRow(12), 50);
+			this, &GameDisplayOptions_gump::cancel, Strings::CANCEL(), 75, yForRow(13), 50);
 
 	load_settings();
 	build_buttons();
@@ -454,6 +472,8 @@ void GameDisplayOptions_gump::save_settings() {
 	}
 	gwin->set_text_bg(text_bg - 1);
 	config->set("config/gameplay/textbackground", text_bg - 1, false);
+	gwin->set_conv_text_centered(conv_text_centered);
+	config->set("config/gameplay/conv_text_centered", conv_text_centered ? "yes" : "no", false);
 	if (smooth_scrolling < 0) {
 		smooth_scrolling = 0;
 	} else if (smooth_scrolling > 4) {
@@ -508,6 +528,7 @@ void GameDisplayOptions_gump::paint() {
 	font->paint_text(iwin->get_ib8(), Strings::Useoutlinecolor_(), x + label_margin, y + yForRow(++y_index) + 1);
 	font->paint_text(iwin->get_ib8(), Strings::Hidemissingitems_(), x + label_margin, y + yForRow(++y_index) + 1);
 	font->paint_text(iwin->get_ib8(), Strings::TextBackground_(), x + label_margin, y + yForRow(++y_index) + 1);
+	font->paint_text(iwin->get_ib8(), Strings::TextAlignment_(), x + label_margin, y + yForRow(++y_index) + 1);
 	font->paint_text(iwin->get_ib8(), Strings::Smoothscrolling_(), x + label_margin, y + yForRow(++y_index) + 1);
 	font->paint_text(iwin->get_ib8(), Strings::Skipintro_(), x + label_margin, y + yForRow(++y_index) + 1);
 	if (buttons[id_usecode_intro]) {

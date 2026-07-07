@@ -221,6 +221,10 @@
 0x5D9:Original
 0x5DA:Serif
 
+0x5DB:Text Alignment:
+0x5DC:Centered
+0x5DD:Top-Left
+
 # Gamemenu_gump.cc
 0x5E0:Load/Save Game
 0x5E1:Video Options
