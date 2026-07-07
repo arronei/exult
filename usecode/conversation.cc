@@ -155,9 +155,14 @@ void Conversation::init_faces() {
 
 /*
  * Get the rectangle within the game area used for conversation faces
- * and text.  A fixed 320x200 rectangle, centered in the game area.
+ * and text.  Either a fixed 320x200 rectangle centered in the game area,
+ * or the full game area starting at the top-left, per the "Text Alignment"
+ * option.
  */
 TileRect Conversation::get_conv_rect() const {
+	if (!gwin->get_conv_text_centered()) {
+		return gwin->get_game_rect();
+	}
 	const int convw = 320;
 	const int convh = 200;
 	return TileRect((gwin->get_width() - convw) / 2, (gwin->get_height() - convh) / 2, convw, convh);

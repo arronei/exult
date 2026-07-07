@@ -144,6 +144,7 @@ class Game_window {
 	bool fastmouse;
 	bool double_click_closes_gumps;
 	int  text_bg;                 // draw a dark background behind text
+	bool conv_text_centered;      // center conversation face/text box vs. top-left
 	int  step_tile_delta;         // multiplier for the delta in start_actor_alt
 	int  allow_right_pathfind;    // If moving with right click is allowed
 	bool scroll_with_mouse;       // scroll game view with mousewheel
@@ -303,6 +304,14 @@ public:
 
 	void set_text_bg(int t) {
 		text_bg = t;
+	}
+
+	bool get_conv_text_centered() const {
+		return conv_text_centered;
+	}
+
+	void set_conv_text_centered(bool c) {
+		conv_text_centered = c;
 	}
 
 	bool can_scroll_with_mouse() const {    // scroll game view with mousewheel
