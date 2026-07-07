@@ -261,12 +261,16 @@ std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
 		std::cerr << "Exult.flx file is corrupted. Please reinstall Exult." << std::endl;
 		throw quit_exception();
 	}
-	int                      xpos        = (gwin->get_win()->get_full_width() / 2 + fr->get_width()) / 2;
+	int                      xpos        = (gwin->get_width() / 2 + fr->get_width()) / 2;
 	std::vector<ModManager>& game_list   = gamemanager->get_game_list();
 	const int                num_choices = game_list.size();
-	const int                last        = num_choices > first + pagesize ? first + pagesize : num_choices;
+	if (num_choices == 1) {
+		Shape_frame* logo = exult_flx.get_shape(EXULT_FLX_EXULT_LOGO_SHP, 1);
+		ypos              = (centery + logo->get_height() / 2 + gwin->get_win()->get_end_y()) / 2;
+	}
+	const int last = num_choices > first + pagesize ? first + pagesize : num_choices;
 	for (int i = first; i < last; i++) {
-		const int         menux     = xpos + (i % 2) * gwin->get_win()->get_full_width() / 2 + gwin->get_win()->get_start_x();
+		const int         menux     = num_choices == 1 ? centerx : xpos + (i % 2) * gwin->get_width() / 2;
 		const ModManager& exultgame = game_list[i];
 		const bool have_sfx = Audio::have_config_sfx(exultgame.get_cfgname()) || Audio::have_roland_sfx(exultgame.get_game_type())
 							  || Audio::have_sblaster_sfx(exultgame.get_game_type()) || Audio::have_midi_sfx();
@@ -303,7 +307,7 @@ std::unique_ptr<MenuList> ExultMenu::create_main_menu(int first) {
 		total_text_width += font->get_text_width(choice);
 	}
 	const int count      = static_cast<int>(menuchoices.size());
-	const int gap        = std::max(16, (gwin->get_win()->get_full_width() - total_text_width) / (count + 1));
+	const int gap        = std::max(16, (gwin->get_width() - total_text_width) / (count + 1));
 	const int total_span = total_text_width + (count - 1) * gap;
 	xpos                 = centerx - total_span / 2;
 	ypos                 = gwin->get_win()->get_end_y() - 3 * font->get_text_height();
@@ -323,13 +327,17 @@ std::unique_ptr<MenuList> ExultMenu::create_mods_menu(ModManager* selgame, int f
 	auto menu = std::make_unique<MenuList>();
 
 	int ypos = 15 + gwin->get_win()->get_start_y();
-	int xpos = gwin->get_win()->get_full_width() / 4;
+	int xpos = gwin->get_width() / 4;
 
 	std::vector<ModInfo>& mod_list    = selgame->get_mod_list();
 	const int             num_choices = mod_list.size();
-	const int             last        = num_choices > first + pagesize ? first + pagesize : num_choices;
+	if (num_choices == 1) {
+		Shape_frame* logo = exult_flx.get_shape(EXULT_FLX_EXULT_LOGO_SHP, 1);
+		ypos              = (centery + logo->get_height() / 2 + gwin->get_win()->get_end_y()) / 2;
+	}
+	const int last = num_choices > first + pagesize ? first + pagesize : num_choices;
 	for (int i = first; i < last; i++) {
-		const int      menux    = xpos + (i % 2) * gwin->get_win()->get_full_width() / 2 + gwin->get_win()->get_start_x();
+		const int      menux    = num_choices == 1 ? centerx : xpos + (i % 2) * gwin->get_width() / 2;
 		const ModInfo& exultmod = mod_list[i];
 		auto*          entry    = new MenuGameEntry(fonton, font, exultmod.get_menu_string().c_str(), nullptr, menux, ypos);
 		entry->set_id(i);

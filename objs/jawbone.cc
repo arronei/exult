@@ -74,7 +74,9 @@ void Jawbone_object::find_teeth() {
 	Object_iterator next(objects);
 
 	while ((obj = next.get_next()) != nullptr) {
-		teeth[obj->get_framenum()] = obj;
+		if (obj->get_framenum() < std::size(teeth)) {
+			teeth[obj->get_framenum()] = obj;
+		}
 	}
 
 	for (auto* tooth : teeth) {

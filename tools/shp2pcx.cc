@@ -233,8 +233,13 @@ u7shape* load_shape(char* filename) {
 				uint8* pixptr = frame->pixels;
 				pixptr        = pixptr + temp_int;
 
+				uint8* const pixend = frame->pixels + frame->width * frame->height;
+
 				if (pixptr < frame->pixels) {
 					pixptr = frame->pixels;
+				}
+				if (pixptr > pixend) {
+					pixptr = pixend;
 				}
 				if (slice_type) {    // Compressed
 					while (slice_length > 0) {
@@ -244,12 +249,16 @@ u7shape* load_shape(char* filename) {
 						if (block_type) {
 							const uint8 pix = read1(fp);
 							for (int j = 0; j < block_length; j++) {
-								*pixptr++ = pix;
+								if (pixptr < pixend) {
+									*pixptr++ = pix;
+								}
 							}
 						} else {
 							for (int j = 0; j < block_length; j++) {
 								const uint8 pix = read1(fp);
-								*pixptr++       = pix;
+								if (pixptr < pixend) {
+									*pixptr++ = pix;
+								}
 							}
 						}
 						slice_length -= block_length;
@@ -258,7 +267,9 @@ u7shape* load_shape(char* filename) {
 					// Just read the pixels
 					for (int j = 0; j < slice_length; j++) {
 						const uint8 pix = read1(fp);
-						*pixptr++       = pix;
+						if (pixptr < pixend) {
+							*pixptr++ = pix;
+						}
 					}
 				}
 			}

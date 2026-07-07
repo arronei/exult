@@ -477,9 +477,8 @@ unique_ptr<unsigned char[]> Combo::write(int& datalen    // Actual length of dat
  */
 
 const unsigned char* Combo::read(const unsigned char* buf, int bufsize) {
-	ignore_unused_variable_warning(bufsize);
 	const unsigned char* ptr = buf;
-	Serial_in            in(ptr);
+	Serial_in            in(ptr, buf + bufsize);
 	in << name;
 	in << hot_index << starttx << startty;
 	short cnt;

@@ -1610,7 +1610,7 @@ Usecode_value Usecode_internal::call_intrinsic(
 	} else {
 		table = intrinsics_bg;
 	}
-	if (static_cast<size_t>(intrinsic) <= table.size()) {
+	if (static_cast<size_t>(intrinsic) < table.size()) {
 		auto&                    table_entry = table[intrinsic];
 		const UsecodeIntrinsicFn func        = table_entry.func;
 		const char*              name        = table_entry.name;
@@ -1905,6 +1905,9 @@ int Usecode_internal::run() {
 			if (frame->ip + get_opcode_length(static_cast<int>(opcode)) > frame->endp) {
 				cerr << "Operands lie outside of code segment. ";
 				CERR_CURRENT_IP();
+				Usecode_value msg("Out of bounds usecode execution!");
+				abort_function(msg);
+				frame_changed = true;
 				continue;
 			}
 

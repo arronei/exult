@@ -114,7 +114,15 @@ void Game_window::restore_flex_files(IDataSource& in, const char* basepath) {
 		}
 		len -= 13;
 		in.seek(location);    // Get to it.
-		char fname[50];       // Set up name.
+		char                    fixedname[50];    // Set up name.
+		std::unique_ptr<char[]> dynamicname;
+		char*                   fname;
+		if (baselen + 13 > std::size(fixedname)) {
+			dynamicname = std::make_unique<char[]>(baselen + 13);
+			fname       = dynamicname.get();
+		} else {
+			fname = fixedname;
+		}
 		strcpy(fname, basepath);
 		in.read(&fname[baselen], 13);
 		size_t namelen = strlen(fname);

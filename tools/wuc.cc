@@ -77,6 +77,11 @@ void add_label() {
 		printf("Too many labels.\n");
 		exit(0);
 	}
+	if (strlen(token) >= sizeof(labels[lindex])) {
+		printf("Error: label '%s' is too long (max %zu characters).\n", token,
+			   sizeof(labels[lindex]) - 1);
+		exit(0);
+	}
 	for (i = 0; i < lindex; i++) {
 		if (!strcasecmp(token, labels[i])) {
 			printf("Warning: label '%s' already exists.\n", token);

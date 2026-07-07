@@ -905,7 +905,7 @@ Chunk_chooser::~Chunk_chooser() {
 	gtk_widget_destroy(get_widget());
 	int i;
 	for (i = 0; i < num_chunks; i++) {    // Delete all the chunks.
-		delete chunklist[i];
+		delete[] chunklist[i];
 	}
 }
 
@@ -945,7 +945,7 @@ bool Chunk_chooser::server_response(int id, unsigned char* data, int datalen) {
 void Chunk_chooser::end_terrain_editing() {
 	// Clear out cache of chunks.
 	for (int i = 0; i < num_chunks; i++) {
-		delete chunklist[i];
+		delete[] chunklist[i];
 		chunklist[i] = nullptr;
 	}
 	render();
@@ -1126,7 +1126,7 @@ void Chunk_chooser::delete_response(const unsigned char* data, int datalen) {
 	} else {
 		ExultStudio* studio = ExultStudio::get_instance();
 		studio->update_chunk_groups_for_deletion(tnum);
-		delete chunklist[tnum];
+		delete[] chunklist[tnum];
 		chunklist.erase(chunklist.begin() + tnum);
 		update_num_chunks(num_chunks - 1);
 		render();

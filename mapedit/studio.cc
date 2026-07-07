@@ -1976,7 +1976,9 @@ void add_to_tree(GtkTreeStore* model, const char* folderName, const char* files,
 				char*     fname = entry->d_name;
 				const int flen  = strlen(fname);
 				// Ignore case of extension.
-				if (!strcmp(fname, ".") || !strcmp(fname, "..") || strcasecmp(fname + flen - strlen(ext), ext) != 0) {
+				if (!strcmp(fname, ".") || !strcmp(fname, "..")
+					|| flen < static_cast<int>(strlen(ext))
+					|| strcasecmp(fname + flen - strlen(ext), ext) != 0) {
 					continue;
 				}
 				gtk_tree_store_append(model, &child_iter, &iter);
@@ -1990,7 +1992,9 @@ void add_to_tree(GtkTreeStore* model, const char* folderName, const char* files,
 				char*     fname = entry->d_name;
 				const int flen  = strlen(fname);
 				// Ignore case of extension.
-				if (!strcmp(fname, ".") || !strcmp(fname, "..") || strcasecmp(fname + flen - strlen(ext), ext) != 0) {
+				if (!strcmp(fname, ".") || !strcmp(fname, "..")
+					|| flen < static_cast<int>(strlen(ext))
+					|| strcasecmp(fname + flen - strlen(ext), ext) != 0) {
 					continue;
 				}
 				// Filter out 'font0000.vga' file as it is apparently from an old origin screensaver.

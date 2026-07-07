@@ -56,8 +56,7 @@ public:
 	}
 
 	bool fail() const {
-		auto& _file = *_pFile;
-		return _file.fail();
+		return !_pFile || _pFile->fail();
 	}
 
 	const std::map<unsigned int, UCFuncSet>& funcmap() {

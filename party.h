@@ -57,7 +57,7 @@ public:
 	Party_manager();
 
 	void set_count(int n) {    // For initializing from file.
-		party_count = n;
+		party_count = n < 0 ? 0 : (n > EXULT_PARTY_MAX ? EXULT_PARTY_MAX : n);
 	}
 
 	void set_member(int i, int npcnum) {
