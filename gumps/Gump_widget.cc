@@ -67,7 +67,7 @@ TileRect Gump_widget::get_rect() const {
 	Shape_frame* s = get_shape();
 
 	if (!s) {
-		return TileRect(0, 0, 0, 0);
+		return TileRect(sx, sy, 0, 0);
 	}
 
 	return TileRect(sx - s->get_xleft(), sy - s->get_yabove(), s->get_width(), s->get_height());
