@@ -1281,27 +1281,30 @@ bool Combat_schedule::attack_target(
 		// Also, ammo should never be zero in this branch.
 		bool       need_new_weapon = false;
 		const bool ready           = att ? att->find_readied(ammo) >= 0 : false;
+		const bool skip_consume    = cheat.GetUnlimitedAmmo() && att && att->is_in_party();
 
 		// Time to use up ammo.
-		if (winf->uses_charges()) {
-			if (ammo->get_info().has_quality()) {
-				ammo->set_quality(ammo->get_quality() - need_ammo);
-			}
-			if (winf->delete_depleted() && (!ammo->get_quality() || !ammo->get_info().has_quality())) {
+		if (!skip_consume) {
+			if (winf->uses_charges()) {
+				if (ammo->get_info().has_quality()) {
+					ammo->set_quality(ammo->get_quality() - need_ammo);
+				}
+				if (winf->delete_depleted() && (!ammo->get_quality() || !ammo->get_info().has_quality())) {
+					// Call unready usecode if needed.
+					if (att) {
+						att->remove(ammo);
+					}
+					ammo->remove_this();
+					need_new_weapon = true;
+				}
+			} else {
+				const int quant = ammo->get_quantity();
 				// Call unready usecode if needed.
-				if (att) {
+				if (att && quant == need_ammo) {
 					att->remove(ammo);
 				}
-				ammo->remove_this();
-				need_new_weapon = true;
+				ammo->modify_quantity(-need_ammo, &need_new_weapon);
 			}
-		} else {
-			const int quant = ammo->get_quantity();
-			// Call unready usecode if needed.
-			if (att && quant == need_ammo) {
-				att->remove(ammo);
-			}
-			ammo->modify_quantity(-need_ammo, &need_new_weapon);
 		}
 
 		if (att && need_new_weapon && ready) {

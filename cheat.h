@@ -274,6 +274,16 @@ public:
 	}
 
 	void SetFoodUse(FoodUse newuse, bool writeout);
+
+private:
+	bool unlimited_ammo = false;
+
+public:
+	bool GetUnlimitedAmmo(bool saved = false) {
+		return enabled || saved ? unlimited_ammo : false;
+	}
+
+	void SetUnlimitedAmmo(bool newval, bool writeout);
 };
 
 extern Cheat cheat;
