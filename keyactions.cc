@@ -394,7 +394,7 @@ void ActionTryKeys(const int* params) {
 		return;
 	}
 	const int qual = obj->get_quality();    // Key quality should match.
-	Actor*    party[10];                    // Get ->party members.
+	Actor*    party[EXULT_PARTY_MAX + 1];    // Get ->party members.
 	const int party_cnt = gwin->get_party(&party[0], 1);
 	for (int i = 0; i < party_cnt; i++) {
 		Actor*             act = party[i];

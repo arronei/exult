@@ -3177,7 +3177,14 @@ void Usecode_internal::write() {
 	}
 	{
 		OFileDataSource out(USEDAT);
+		// 0xffff marks the new, self-describing party format (count + slot
+		// total + that many slots) so old fixed-8-slot saves (no marker,
+		// count comes first) still load correctly after EXULT_PARTY_MAX
+		// changes. See read() below. Mirrors the -1 timer-count sentinel
+		// used just below for the same reason.
+		out.write2(0xffff);
 		out.write2(partyman->get_count());    // Write party.
+		out.write2(EXULT_PARTY_MAX);
 		for (int i = 0; i < EXULT_PARTY_MAX; i++) {
 			out.write2(partyman->get_member(i));
 		}
@@ -3274,10 +3281,31 @@ void Usecode_internal::read() {
 		throw file_read_exception(USEDAT);
 	}
 	auto& in = *pIn;
-	partyman->set_count(little_endian::Read2(in));    // Read party.
-	size_t i;                                         // Blame MSVC
-	for (i = 0; i < EXULT_PARTY_MAX; i++) {
-		partyman->set_member(i, little_endian::Read2(in));
+	size_t    i;                       // Blame MSVC
+	const int first = little_endian::Read2(in);
+	if (first == 0xffff) {
+		// New self-describing format: count, then slot total, then that
+		// many slots. Slot total lets this keep working if
+		// EXULT_PARTY_MAX changes again later.
+		partyman->set_count(little_endian::Read2(in));
+		const int slots = little_endian::Read2(in);
+		for (i = 0; i < static_cast<size_t>(slots); i++) {
+			const int npc = little_endian::Read2(in);
+			if (i < EXULT_PARTY_MAX) {
+				partyman->set_member(i, npc);
+			}
+		}
+	} else {
+		// Legacy format (pre party-size-11): 'first' IS the count,
+		// followed by exactly 8 fixed slots (the old EXULT_PARTY_MAX).
+		constexpr int legacy_party_max = 8;
+		partyman->set_count(first);
+		for (i = 0; i < legacy_party_max; i++) {
+			const int npc = little_endian::Read2(in);
+			if (i < EXULT_PARTY_MAX) {
+				partyman->set_member(i, npc);
+			}
+		}
 	}
 	partyman->link_party();
 	// Timers.

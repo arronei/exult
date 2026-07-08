@@ -53,7 +53,7 @@ Game_object* is_party_item(
 		int frnum,    // Desired frame
 		int qual      // Desired quality
 ) {
-	Actor*    party[9];    // Get party.
+	Actor*    party[EXULT_PARTY_MAX + 1];    // Get party.
 	const int cnt = Game_window::get_instance()->get_party(party, 1);
 	for (int i = 0; i < cnt; i++) {
 		Actor*       person = party[i];

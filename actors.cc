@@ -2695,7 +2695,7 @@ void Actor::fight_back(Game_object* attacker) {
 		if (!gwin->in_combat()) {
 			gwin->toggle_combat();
 		}
-		Actor*    party[9];    // Get entire party, including Avatar.
+		Actor*    party[EXULT_PARTY_MAX + 1];    // Get entire party, including Avatar.
 		const int cnt = gwin->get_party(party, 1);
 		for (int i = 0; i < cnt; i++) {
 			const int sched = party[i]->get_schedule_type();
@@ -4845,7 +4845,7 @@ void Main_actor::die(Game_object* /* attacker */
 	}
 	Actor::set_flag(Obj_flags::dead);
 	clear_type_flag(Actor::tf_bleeding);
-	Actor*    party[9];
+	Actor*    party[EXULT_PARTY_MAX + 1];
 	const int cnt = gwin->get_party(party, 1);
 	for (int i = 0; i < cnt; i++) {
 		party[i]->clear_type_flag(Actor::tf_bleeding);

@@ -144,7 +144,7 @@ bool Halo_button::activate(MouseButton button) {
 		return true;
 	}
 	// On?  Got to turn off others.
-	Actor*    party[9];    // Get entire party, including Avatar.
+	Actor*    party[EXULT_PARTY_MAX + 1];    // Get entire party, including Avatar.
 	const int cnt = gwin->get_party(party, 1);
 	for (int i = 0; i < cnt; i++) {
 		if (party[i] != actor && party[i]->is_combat_protected()) {

@@ -38,6 +38,7 @@
 #include "ignore_unused_variable_warning.h"
 #include "monsters.h"
 #include "npctime.h"
+#include "party.h"
 #include "paths.h"
 #include "shapeinf.h"
 #include "tqueue.h"
@@ -119,7 +120,7 @@ void Missile_launcher::handle_event(unsigned long curtime, uintptr udata) {
 		dest.ty += range * dy;
 		proj = std::make_unique<Projectile_effect>(egg, dest, weapon, shapenum, shapenum);
 	} else {    // Target a party member.
-		Actor*    party[9];
+		Actor*    party[EXULT_PARTY_MAX + 1];
 		const int psize = gwin->get_party(party, 1);
 		int       cnt   = psize;
 		const int n     = rand() % psize;    // Pick one at random.

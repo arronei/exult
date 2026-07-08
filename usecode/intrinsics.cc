@@ -2388,7 +2388,7 @@ USECODE_INTRINSIC(on_barge) {
 	if (barge) {
 		// See if party is on barge.
 		const TileRect foot = barge->get_tile_footprint();
-		Actor*         party[9];
+		Actor*         party[EXULT_PARTY_MAX + 1];
 		const int      cnt = gwin->get_party(party, 1);
 		for (int i = 0; i < cnt; i++) {
 			Actor*           act = party[i];

@@ -28,6 +28,7 @@
 #include "cheat.h"
 #include "game.h"
 #include "gamewin.h"
+#include "party.h"
 
 #include <iostream> /* Debugging. */
 
@@ -213,7 +214,7 @@ void Game_clock::set_fog(bool onoff) {
 
 void Game_clock::check_hunger() const {
 	Game_window* gwin = Game_window::get_instance();
-	Actor*       party[9];    // Get party + Avatar.
+	Actor*       party[EXULT_PARTY_MAX + 1];    // Get party + Avatar.
 	const int    cnt = gwin->get_party(party, 1);
 	for (int i = 0; i < cnt; i++) {
 		party[i]->use_food();
@@ -224,7 +225,7 @@ static void Check_freezing() {
 	Game_window* gwin = Game_window::get_instance();
 	// Avatar's flag applies to party.
 	const bool freeze = gwin->get_main_actor()->get_flag(Obj_flags::freeze);
-	Actor*     party[9];    // Get party + Avatar.
+	Actor*     party[EXULT_PARTY_MAX + 1];    // Get party + Avatar.
 	const int  cnt = gwin->get_party(party, 1);
 	for (int i = 0; i < cnt; i++) {
 		party[i]->check_temperature(freeze);

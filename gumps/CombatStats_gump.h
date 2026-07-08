@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Face_button.h"
 #include "Gump.h"
 #include "misc_buttons.h"
+#include "party.h"
 
 class Actor;
 
@@ -43,8 +44,9 @@ public:
 	void paint() override;
 
 private:
-	Actor* party[9];
+	Actor* party[EXULT_PARTY_MAX + 1];
 	int    party_size;
+	int    col_step;    // Column spacing; shrinks past cstats_art_sizes members.
 };
 
 #endif

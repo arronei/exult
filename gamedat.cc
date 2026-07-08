@@ -586,7 +586,7 @@ void Game_window::read_saveinfo(IDataSource* in, SaveGame_Details*& details, Sav
 	in->skip(sizeof(SaveGame_Details) - offsetof(SaveGame_Details, reserved0));
 
 	party = new SaveGame_Party[details->party_size];
-	for (i = 0; i < 8 && i < details->party_size; i++) {
+	for (i = 0; i < EXULT_PARTY_MAX + 1 && i < details->party_size; i++) {
 		in->read(party[i].name, 18);
 		party[i].shape = in->read2();
 

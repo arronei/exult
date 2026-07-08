@@ -31,7 +31,7 @@
 
 class Actor;
 
-#define EXULT_PARTY_MAX 8
+#define EXULT_PARTY_MAX 11
 
 /*
  *  Manage the party.

@@ -344,7 +344,7 @@ void Cheat::toggle_god() {
 	god_mode = !god_mode;
 	if (god_mode) {
 		eman->center_text(Strings::GodModeEnabled());
-		Actor*    party[9];    // Set attack mode to 'nearest'.
+		Actor*    party[EXULT_PARTY_MAX + 1];    // Set attack mode to 'nearest'.
 		const int cnt = gwin->get_party(party, 1);
 		for (int i = 0; i < cnt; i++) {
 			party[i]->set_attack_mode(Actor::nearest);
@@ -789,7 +789,7 @@ void Cheat::levelup_party() const {
 		return;
 	}
 
-	Actor* party[9];
+	Actor* party[EXULT_PARTY_MAX + 1];
 	bool   leveledup = false;
 
 	// get party, including Avatar
@@ -1404,7 +1404,7 @@ void Cheat::heal_party() const {
 	}
 
 	// heal everyone
-	Actor* party[9];
+	Actor* party[EXULT_PARTY_MAX + 1];
 	count = gwin->get_party(party, 1);
 	for (i = 0; i < count; i++) {
 		if (!party[i]->is_dead()) {
