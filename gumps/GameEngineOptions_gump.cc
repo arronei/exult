@@ -310,17 +310,17 @@ void GameEngineOptions_gump::load_settings() {
 }
 
 GameEngineOptions_gump::GameEngineOptions_gump() : Modal_gump(nullptr, -1) {
-	SetProceduralBackground(TileRect(0, 0, 100, yForRow(13)), -1);
+	SetProceduralBackground(TileRect(0, 0, 100, yForRow(14)), -1);
 
 	// Ok
 	buttons[id_ok]
-			= std::make_unique<GameEngineOptions_button>(this, &GameEngineOptions_gump::close, Strings::OK(), 25, yForRow(12), 50);
+			= std::make_unique<GameEngineOptions_button>(this, &GameEngineOptions_gump::close, Strings::OK(), 25, yForRow(13), 50);
 	// Help
 	buttons[id_help]
-			= std::make_unique<GameEngineOptions_button>(this, &GameEngineOptions_gump::help, Strings::HELP(), 50, yForRow(12), 50);
+			= std::make_unique<GameEngineOptions_button>(this, &GameEngineOptions_gump::help, Strings::HELP(), 50, yForRow(13), 50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<GameEngineOptions_button>(
-			this, &GameEngineOptions_gump::cancel, Strings::CANCEL(), 75, yForRow(12), 50);
+			this, &GameEngineOptions_gump::cancel, Strings::CANCEL(), 75, yForRow(13), 50);
 
 	load_settings();
 	build_buttons();
