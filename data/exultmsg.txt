@@ -300,6 +300,7 @@
 0x632:Cheats:
 0x633:Feeding:
 0x634:Enhancements:
+0x635:Unlimited Ammo:
 
 #InputOptions_gump.cc
 0x640:Single

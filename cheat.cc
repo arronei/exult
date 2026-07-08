@@ -313,6 +313,10 @@ void Cheat::init() {
 	} else {
 		food_use = FoodUse::Manual;
 	}
+
+	std::string unlimited_ammo_str;
+	config->value("config/gameplay/unlimited_ammo", unlimited_ammo_str, "no");
+	unlimited_ammo = unlimited_ammo_str == "yes";
 }
 
 void Cheat::finish_init() {
@@ -1522,4 +1526,9 @@ void Cheat::SetFoodUse(FoodUse newuse, bool writeout) {
 	if (newuse == FoodUse::Disabled) {
 		config->set("config/gameplay/feeding", "disabled", writeout);
 	}
+}
+
+void Cheat::SetUnlimitedAmmo(bool newval, bool writeout) {
+	unlimited_ammo = newval;
+	config->set("config/gameplay/unlimited_ammo", newval ? "yes" : "no", writeout);
 }

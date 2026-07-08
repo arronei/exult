@@ -139,6 +139,10 @@ namespace {
 			return get_text_msg(0x633 - msg_file_start);
 		}
 
+		static auto UnlimitedAmmo_() {
+			return get_text_msg(0x635 - msg_file_start);
+		}
+
 		static auto Enhancements_() {
 			return get_text_msg(0x634 - msg_file_start);
 		}
@@ -241,11 +245,17 @@ void GameEngineOptions_gump::update_cheat_buttons() {
 
 	if (!cheats) {
 		buttons[id_feeding].reset();
+		buttons[id_unlimited_ammo].reset();
 	} else {
 		std::vector<std::string> feedingOpts = {Strings::Manual(), Strings::Automatic(), Strings::Disabled()};
 		buttons[id_feeding]                  = std::make_unique<GameEngineTextToggle>(
                 this, &GameEngineOptions_gump::toggle_feeding, std::move(feedingOpts), feeding,
                 get_button_pos_for_label(Strings::Feeding_()), yForRow(++y_index), large_size);
+
+		const std::vector<std::string> yesNo = {Strings::No(), Strings::Yes()};
+		buttons[id_unlimited_ammo]           = std::make_unique<GameEngineTextToggle>(
+                this, &GameEngineOptions_gump::toggle_unlimited_ammo, yesNo, unlimited_ammo,
+                get_button_pos_for_label(Strings::UnlimitedAmmo_()), yForRow(++y_index), small_size);
 	}
 
 	// Risize to fit all
@@ -295,21 +305,22 @@ void GameEngineOptions_gump::load_settings() {
 			frames = i;
 		}
 	}
-	feeding = int(cheat.GetFoodUse(true));
+	feeding        = int(cheat.GetFoodUse(true));
+	unlimited_ammo = cheat.GetUnlimitedAmmo(true) ? 1 : 0;
 }
 
 GameEngineOptions_gump::GameEngineOptions_gump() : Modal_gump(nullptr, -1) {
-	SetProceduralBackground(TileRect(0, 0, 100, yForRow(13)), -1);
+	SetProceduralBackground(TileRect(0, 0, 100, yForRow(14)), -1);
 
 	// Ok
 	buttons[id_ok]
-			= std::make_unique<GameEngineOptions_button>(this, &GameEngineOptions_gump::close, Strings::OK(), 25, yForRow(12), 50);
+			= std::make_unique<GameEngineOptions_button>(this, &GameEngineOptions_gump::close, Strings::OK(), 25, yForRow(13), 50);
 	// Help
 	buttons[id_help]
-			= std::make_unique<GameEngineOptions_button>(this, &GameEngineOptions_gump::help, Strings::HELP(), 50, yForRow(12), 50);
+			= std::make_unique<GameEngineOptions_button>(this, &GameEngineOptions_gump::help, Strings::HELP(), 50, yForRow(13), 50);
 	// Cancel
 	buttons[id_cancel] = std::make_unique<GameEngineOptions_button>(
-			this, &GameEngineOptions_gump::cancel, Strings::CANCEL(), 75, yForRow(12), 50);
+			this, &GameEngineOptions_gump::cancel, Strings::CANCEL(), 75, yForRow(13), 50);
 
 	load_settings();
 	build_buttons();
@@ -337,6 +348,7 @@ void GameEngineOptions_gump::save_settings() {
 	config->set("config/video/fps", fps, false);
 	cheat.set_enabled(cheats != 0);
 	cheat.SetFoodUse(Cheat::FoodUse(feeding), false);
+	cheat.SetUnlimitedAmmo(unlimited_ammo != 0, false);
 	gumpman->set_gumps_dont_pause_game(!gumps_pause);
 	config->set("config/gameplay/gumps_dont_pause_game", gumps_pause ? "no" : "yes", false);
 	config->write_back();
@@ -363,6 +375,9 @@ void GameEngineOptions_gump::paint() {
 	font->paint_text(iwin->get_ib8(), Strings::Cheats_(), x + label_margin, y + yForRow(++y_index) + 1);
 	if (buttons[id_feeding]) {
 		font->paint_text(iwin->get_ib8(), Strings::Feeding_(), x + label_margin, y + yForRow(++y_index) + 1);
+	}
+	if (buttons[id_unlimited_ammo]) {
+		font->paint_text(iwin->get_ib8(), Strings::UnlimitedAmmo_(), x + label_margin, y + yForRow(++y_index) + 1);
 	}
 	gwin->set_painted();
 }
