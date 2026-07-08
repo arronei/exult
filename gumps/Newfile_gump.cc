@@ -41,6 +41,7 @@
 #include "party.h"
 #include "touchui.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstring>
 #include <ctime>
@@ -486,14 +487,24 @@ void Newfile_gump::paint() {
 	if (details && party) {
 		int i;
 
-		for (i = 0; i < 4 && i < details->party_size; i++) {
+		// ponytail: panel art was tuned for 2 rows of 4 (8 shown, party_size
+		// up to 9). Beyond that, split evenly across the same two rows and
+		// shrink spacing to fit rather than clipping the newest members.
+		constexpr int native_per_row = 4;
+		constexpr int native_step    = 23;
+		const int     per_row        = std::max(native_per_row, (details->party_size + 1) / 2);
+		const int     step           = per_row > native_per_row
+													? (native_step * (native_per_row - 1)) / (per_row - 1)
+													: native_step;
+
+		for (i = 0; i < per_row && i < details->party_size; i++) {
 			ShapeID shape(party[i].shape, 16, static_cast<ShapeFile>(party[i].shape_file));
-			shape.paint_shape(x + 249 + i * 23, y + 169);
+			shape.paint_shape(x + 249 + i * step, y + 169);
 		}
 
-		for (i = 4; i < 8 && i < details->party_size; i++) {
+		for (i = per_row; i < 2 * per_row && i < details->party_size; i++) {
 			ShapeID shape(party[i].shape, 16, static_cast<ShapeFile>(party[i].shape_file));
-			shape.paint_shape(x + 249 + (i - 4) * 23, y + 198);
+			shape.paint_shape(x + 249 + (i - per_row) * step, y + 198);
 		}
 
 		char info[320];

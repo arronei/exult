@@ -34,6 +34,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "party.h"
 #include "shapeid.h"
 
+#include <algorithm>
+
 #define PALETTE_INDEX_RED   22
 #define PALETTE_INDEX_GREEN 64
 #define PALETTE_INDEX_BLUE  79
@@ -370,7 +372,7 @@ TileRect Portrait_button::get_rect() const {
  */
 
 Face_stats::Face_stats() : Gump(nullptr, 0, 0, 0, SF_GUMPS_VGA) {
-	for (int i = 1; i < 8; i++) {
+	for (int i = 1; i < EXULT_PARTY_MAX + 1; i++) {
 		npc_nums[i] = -1;
 		party[i]    = nullptr;
 	}
@@ -424,7 +426,7 @@ void Face_stats::update_gump() {
 void Face_stats::delete_buttons() {
 	gwin->add_dirty(get_rect());
 
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < EXULT_PARTY_MAX + 1; i++) {
 		if (party[i]) {
 			delete party[i];
 			party[i] = nullptr;
@@ -446,6 +448,7 @@ void Face_stats::create_buttons() {
 	int  black_bar_width = 0;
 	int  height          = 0;
 	bool vertical        = false;
+	int  left_companions = 3;    // Vertical-mode split point; recomputed below.
 
 	resx            = gwin->get_win()->get_full_width();
 	resy            = gwin->get_win()->get_full_height();
@@ -494,10 +497,17 @@ void Face_stats::create_buttons() {
 		posy   = PORTRAIT_HEIGHT;
 		width  = 0;
 		height = PORTRAIT_HEIGHT;
+		// Split Avatar + party as evenly as possible between the two
+		// columns (was a fixed "first 4 left" for the old 8-member max).
+		const int total_portraits = party_size + 1;
+		const int left_count      = total_portraits / 2;
+		left_companions           = left_count - 1;
+		const int right_count     = total_portraits - left_count;
 		// center potraits in Y, mainly to avoid conflicting with other on
 		// screeen controls
-		y        = gamey / 2 - (PORTRAIT_HEIGHT * 4) / 2;
-		vertical = true;
+		const int max_rows = std::max(left_count, right_count);
+		y                  = gamey / 2 - (PORTRAIT_HEIGHT * max_rows) / 2;
+		vertical           = true;
 	}
 
 	posx += gwin->get_win()->get_start_x();
@@ -510,8 +520,8 @@ void Face_stats::create_buttons() {
 	}
 
 	for (i = 0; i < party_size; i++) {
-		// if vertical display first 4 on left and last 4 on right
-		if (vertical && i == 3) {
+		// if vertical, split Avatar + party between left and right columns
+		if (vertical && i == left_companions) {
 			if (black_bar_width > (PORTRAIT_WIDTH * 2)) {
 				posx = gamex + 5;
 			} else if (black_bar_width > PORTRAIT_WIDTH) {
@@ -538,7 +548,7 @@ void Face_stats::create_buttons() {
 
 	region.x = region.y = region.w = region.h = 0;
 
-	for (i = 0; i < 8; i++) {
+	for (i = 0; i < EXULT_PARTY_MAX + 1; i++) {
 		if (party[i]) {
 			const TileRect r = party[i]->get_rect();
 			region           = region.add(r);

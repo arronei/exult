@@ -239,6 +239,7 @@ void Party_manager::link_party() {
  *             0 1
  *            2 3 4
  *           7 5 6 8
+ *            9  10
  */
 static const int followers[EXULT_PARTY_MAX + 1][2] = {
 		{ 0,  1}, // These follow Avatar (ID = -1).
@@ -247,9 +248,12 @@ static const int followers[EXULT_PARTY_MAX + 1][2] = {
 		{ 7, -1}, // Follow 2.
 		{ 5,  6}, // Follow 3.
 		{-1,  8}, // Follow 4.
-		{-1, -1},
-        {-1, -1},
-        {-1, -1}
+		{ 9, -1}, // Follow 5.
+		{-1, 10}, // Follow 6.
+		{-1, -1}, // Follow 7.
+		{-1, -1}, // Follow 8.
+		{-1, -1}, // Follow 9.
+		{-1, -1}, // Follow 10.
 };
 
 /*

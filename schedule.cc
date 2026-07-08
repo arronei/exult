@@ -49,6 +49,7 @@
 #include "ignore_unused_variable_warning.h"
 #include "items.h"
 #include "monstinf.h"
+#include "party.h"
 #include "path.h"
 #include "paths.h"
 #include "schedule.h"
@@ -2620,7 +2621,7 @@ void Sit_schedule::now_what() {
 		if (!npc->is_in_party()) {
 			return;    // Not a party member.
 		}
-		Actor*    party[9];    // See if all sitting.
+		Actor*    party[EXULT_PARTY_MAX + 1];    // See if all sitting.
 		const int cnt = gwin->get_party(&party[0], 1);
 		for (int i = 0; i < cnt; i++) {
 			if ((party[i]->get_framenum() & 0xf) != Actor::sit_frame) {

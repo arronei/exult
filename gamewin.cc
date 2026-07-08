@@ -771,7 +771,7 @@ void Game_window::toggle_combat() {
 	if (combat) {    // Get rid of flee modes.
 		main_actor->ready_best_weapon();
 		set_moving_barge(nullptr);    // And get out of barge mode.
-		Actor*    all[9];
+		Actor*    all[EXULT_PARTY_MAX + 1];
 		const int cnt = get_party(all, 1);
 		for (int i = 0; i < cnt; i++) {
 			// Did Usecode set to flee?
@@ -1992,7 +1992,7 @@ void Game_window::teleport_party(
  */
 
 int Game_window::get_party(
-		Actor** a_list,       // Room for 9.
+		Actor** a_list,       // Room for EXULT_PARTY_MAX + 1.
 		int     avatar_too    // 1 to include Avatar too.
 ) {
 	int n = 0;
@@ -2022,7 +2022,7 @@ bool Game_window::activate_item(
 		int frnum,    // Desired frame
 		int qual      // Desired quality
 ) {
-	Actor*    party[9];    // Get party.
+	Actor*    party[EXULT_PARTY_MAX + 1];    // Get party.
 	const int cnt = get_party(party, 1);
 	for (int i = 0; i < cnt; i++) {
 		Actor*       person = party[i];
@@ -2899,7 +2899,7 @@ void Game_window::setup_game(bool map_editing) {
 	// note: we had to stop the plasma here already, because init_readied
 	// and activate_eggs may update the screen through usecode functions
 	// (Helm of Light, for example)
-	Actor*    party[9];
+	Actor*    party[EXULT_PARTY_MAX + 1];
 	const int cnt = get_party(party, 1);    // Get entire party.
 	for (int i = 0; i < cnt; i++) {         // Init. rings.
 		party[i]->init_readied();

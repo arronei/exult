@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Configuration.h"
 #include "Gump.h"
+#include "party.h"
 
 class Actor;
 class Portrait_button;
@@ -32,8 +33,8 @@ class Face_stats : public Gump {
 	Face_stats();
 
 	int              party_size;
-	Portrait_button* party[8];
-	int              npc_nums[8];
+	Portrait_button* party[EXULT_PARTY_MAX + 1];
+	int              npc_nums[EXULT_PARTY_MAX + 1];
 
 	int resx;
 	int resy;

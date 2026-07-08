@@ -42,6 +42,7 @@
 #include "items.h"
 #include "monstinf.h"
 #include "objs.h"
+#include "party.h"
 #include "paths.h"
 #include "ready.h"
 #include "shapeinf.h"
@@ -643,7 +644,7 @@ list<Game_object_weak>::iterator Combat_schedule::find_protected_attacker() {
 		return opponents.end();
 	}
 	Game_window* gwin = Game_window::get_instance();
-	Actor*       party[9];    // Get entire party, including Avatar.
+	Actor*       party[EXULT_PARTY_MAX + 1];    // Get entire party, including Avatar.
 	const int    cnt        = gwin->get_party(party, 1);
 	Actor*       prot_actor = nullptr;
 	for (int i = 0; i < cnt; i++) {

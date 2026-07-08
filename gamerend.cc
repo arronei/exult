@@ -37,6 +37,7 @@
 #include "gamewin.h"
 #include "ignore_unused_variable_warning.h"
 #include "objiter.h"
+#include "party.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -389,7 +390,7 @@ void Game_window::paint(
 	// Complete repaint?
 	if (!gx && !gy && gw == get_width() && gh == get_height() && main_actor) {
 		// Look for lights.
-		Actor*    party[9];    // Get party, including Avatar.
+		Actor*    party[EXULT_PARTY_MAX + 1];    // Get party, including Avatar.
 		const int cnt           = get_party(party, 1);
 		int       carried_light = 0;
 		for (int i = 0; i < cnt; i++) {
