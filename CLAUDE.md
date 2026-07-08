@@ -22,3 +22,25 @@ $msbuild = & "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.e
 - To confirm the exe was actually rebuilt, check its timestamp/size at repo-root `Exult.exe`, not just that MSBuild reported success.
 - Config/platform must match an existing output dir under `msvcstuff/vs2019/{Debug,Release}/Exult/` — Release|x64 is what's normally used here.
 - Incremental: unchanged .cc files are skipped. To confirm a specific file actually recompiled, check its .obj timestamp in `msvcstuff/vs2019/{Debug,Release}/Exult/<file>.obj` against the source file's mtime.
+
+## Building usecode (bgkeyring / Forge of Virtue)
+
+`ucc.exe` (repo root) is a MinGW/UCRT build — it fails silently (exit 127 in Git Bash,
+`STATUS_DLL_NOT_FOUND`/`STATUS_ENTRYPOINT_NOT_FOUND` in PowerShell) unless
+`C:\msys64\ucrt64\bin` is on PATH. Git's own bundled `mingw64` DLLs are the wrong version —
+don't use those.
+
+```powershell
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+Set-Location "D:\GitHub\exult\content\bgkeyring"
+& "D:\GitHub\exult\ucc.exe" -I src -o data\usecode src\usecode.uc
+```
+
+- Compiling only writes `content/bgkeyring/data/usecode` in the repo — it does **not**
+  touch any installed game/mod folder.
+- To actually test in-game, copy that file over the installed mod's usecode. Find the
+  install path from `%LOCALAPPDATA%\Exult\exult.cfg` → `<blackgate><path>` →
+  `mods\Keyring\data\usecode`. Only `data/usecode` needs copying for source-only (.uc)
+  changes; the rest of `install:` in `Makefile.mingw` is unrelated static game data.
+- After copying, the running game won't pick it up until you reload/restart — usecode
+  loads at game start.

@@ -70,8 +70,15 @@ const int SHAPE_GORGET					= 586;
 const int SHAPE_PLATE_ARMOUR			= 573;
 const int SHAPE_PLATE_LEGGINGS			= 576;
 const int SHAPE_GREAT_HELM				= 541;
+const int SHAPE_CURVED_HEATER			= 545;
+const int SHAPE_ANTIQUE_ARMOUR			= 836;
 
 const int SHAPE_MAGIC_ARMOR				= 666;
+const int SHAPE_MAGIC_HELM				= 383;
+const int SHAPE_MAGIC_GORGET			= 843;
+const int SHAPE_MAGIC_GAUNTLETS			= 835;
+const int SHAPE_MAGIC_LEGGINGS			= 686;
+const int SHAPE_MAGIC_SHIELD			= 663;
 
 const int SHAPE_GEM						= 760;
 const int SHAPE_JEWELRY					= 937;
