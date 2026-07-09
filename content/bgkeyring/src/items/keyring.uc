@@ -130,6 +130,16 @@ class Keyring_data {
 				return false;
 
 			case KEY_ALAGNER:
+				if (ALAGNER->is_dead()) {
+					//Alagner is dead, so keep the key:
+					avatarSay("@I guess if Alagner is dead we can keep this key.@");
+					if (!is_on_keyring(qual)) {
+						keys << qual;
+					}
+					set_keyring_frame(keyring);
+					key->remove_item();
+					return true;
+				}
 				//Refuse Alagner's storeroom key:
 				avatarSay("@I am supposed to return this key to Alagner.@");
 				return false;
@@ -172,8 +182,8 @@ class Keyring_data {
 			for (key in key_coll) {
 				//For each key found, get key quality:
 				var quality = key->get_item_quality();
-				//Do not add inn keys or Alagner's key!
-				if ((quality != KEY_INN) && (quality != KEY_ALAGNER)) {
+				//Do not add inn keys, or Alagner's key unless he's dead:
+				if ((quality != KEY_INN) && ((quality != KEY_ALAGNER) || ALAGNER->is_dead())) {
 					//Add key to keyring:
 					if (!is_on_keyring(quality)) {
 						keys << quality;
