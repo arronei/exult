@@ -88,3 +88,6 @@
 
 //Fixing missing conversation branch with Tseramed
 #include "npcs/tseramed.uc"
+
+//Names Trinsic's two generic gate guards (NPC 257 & 258)
+#include "npcs/trinsic_gate_guards.uc"
