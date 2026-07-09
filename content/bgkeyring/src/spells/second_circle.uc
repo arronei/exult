@@ -94,15 +94,19 @@ void spellDestroyTrap (struct<ObjPos> target) {
 }
 
 void spellEnchant (struct<ObjPos> target) {
-	var normal_missiles = [SHAPE_ARROWS, SHAPE_BOLTS];
-	var magic_missiles = [SHAPE_MAGIC_ARROWS, SHAPE_MAGIC_BOLTS];
+	var shape_normal = [SHAPE_ARROWS, SHAPE_BOLTS, SHAPE_GREAT_HELM, SHAPE_GORGET,
+		SHAPE_GAUNTLETS, SHAPE_PLATE_LEGGINGS, SHAPE_CURVED_HEATER, SHAPE_ANTIQUE_ARMOUR, SHAPE_BOW];
+	var shape_magic = [SHAPE_MAGIC_ARROWS, SHAPE_MAGIC_BOLTS, SHAPE_MAGIC_HELM, SHAPE_MAGIC_GORGET,
+		SHAPE_MAGIC_GAUNTLETS, SHAPE_MAGIC_LEGGINGS, SHAPE_MAGIC_SHIELD, SHAPE_MAGIC_ARMOR, SHAPE_MAGIC_BOW];
 	if (event == DOUBLECLICK) {
 		halt_scheduled();
 		//struct<ObjPos> target = UI_click_on_item();
 		var target_shape = target->get_item_shape();
+		var target_frame = target->get_item_frame();
 		var dir = direction_from(target);
 		item_say("@Ort Ylem@");
-		if (inMagicStorm() && (target_shape in normal_missiles)) {
+		if (inMagicStorm() && ((target_shape in shape_normal) ||
+				(target_shape == SHAPE_LEATHER_BOOTS && target_frame == 0))) {
 			script item {
 				nohalt;
 				face dir;

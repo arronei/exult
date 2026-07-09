@@ -120,12 +120,17 @@ void spellSetFlag object#() () {
 }
 
 void spellEnchantEffect object#() () {
-	var normal_missiles = [SHAPE_ARROWS, SHAPE_BOLTS];
-	var magic_missiles = [SHAPE_MAGIC_ARROWS, SHAPE_MAGIC_BOLTS];
-	for (missile in normal_missiles with index) {
-		if (missile == get_item_shape()) {
-			set_item_shape(magic_missiles[index]);
+	var shape_normal = [SHAPE_ARROWS, SHAPE_BOLTS, SHAPE_GREAT_HELM, SHAPE_GORGET,
+		SHAPE_GAUNTLETS, SHAPE_PLATE_LEGGINGS, SHAPE_CURVED_HEATER, SHAPE_ANTIQUE_ARMOUR, SHAPE_BOW];
+	var shape_magic = [SHAPE_MAGIC_ARROWS, SHAPE_MAGIC_BOLTS, SHAPE_MAGIC_HELM, SHAPE_MAGIC_GORGET,
+		SHAPE_MAGIC_GAUNTLETS, SHAPE_MAGIC_LEGGINGS, SHAPE_MAGIC_SHIELD, SHAPE_MAGIC_ARMOR, SHAPE_MAGIC_BOW];
+	for (shape in shape_normal with index) {
+		if (shape == get_item_shape()) {
+			set_item_shape(shape_magic[index]);
 		}
+	}
+	if (get_item_shape() == SHAPE_LEATHER_BOOTS && get_item_frame() == 0) {
+		set_item_frame(1);
 	}
 }
 
