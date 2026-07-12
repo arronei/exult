@@ -437,6 +437,16 @@ void Usecode_internal::append_string(const char* str) {
 
 // Push/pop stack.
 inline void Usecode_internal::push(const Usecode_value& val) {
+	if (sp >= stack + 1024) {
+		cerr << "Stack overflow on function ";
+		print_usecode_function(symtbl, call_stack.front()->function->id);
+		if (frame) {
+			cerr << " at IP ";
+			cout << hex << setw(4) << setfill('0') << (frame->ins_ip - frame->code) << dec << setfill(' ');
+		}
+		cerr << std::endl;
+		return;
+	}
 	*sp++ = val;
 }
 

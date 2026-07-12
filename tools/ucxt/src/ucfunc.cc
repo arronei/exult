@@ -1476,7 +1476,14 @@ void readbin_U7UCFunc(std::istream& f, UCFunc& ucf, const UCOptions& options, Us
 				// Don't override name from symbol table
 				if (!ucf._sym) {
 					std::stringstream str;
-					str << ucf._data.find(ucop._params_parsed[0])->second << "_";
+					auto name_it = ucf._data.find(ucop._params_parsed[0]);
+					if (name_it != ucf._data.end()) {
+						str << name_it->second << "_";
+					} else {
+						std::cerr << "Error: debug function name offset " << ucop._params_parsed[0]
+								   << " was not found in data segment." << std::endl;
+						str << "UNKNOWN_";
+					}
 					str << std::setfill('0') << std::setbase(16);
 					str.setf(ios::uppercase);
 					str << std::setw(4) << ucf._funcid;

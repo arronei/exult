@@ -202,6 +202,10 @@ std::unique_ptr<short[]> Set_to_read_schedules(
 		num_npcs         = sfile.read4();
 		num_script_names = sfile.read2();
 	}
+	if (num_npcs < 0
+		|| static_cast<uint64>(num_npcs) * 2 > sfile.getSize() - sfile.getPos()) {
+		throw file_read_exception("schedule data");
+	}
 	auto offsets = std::make_unique<short[]>(num_npcs);
 	int  i;    // Read offsets with list of scheds.
 	for (i = 0; i < num_npcs; i++) {

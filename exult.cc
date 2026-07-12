@@ -1534,8 +1534,8 @@ bool Translate_keyboard(const SDL_Event& event, SDL_Keycode& chr, SDL_Keycode& u
 				(event.text.text[0] & 0xF0) == 0xE0 && (event.text.text[1] & 0xC0) == 0x80 && (event.text.text[2] & 0xC0) == 0x80) {
 			unicode = ((event.text.text[0] & 0x0F) << 12) | ((event.text.text[1] & 0x3F) << 6) | ((event.text.text[2] & 0x3F));
 		} else if (
-				(event.text.text[0] & 0xF8) == 0xF0 && (event.text.text[1] & 0xC0) == 0x80 && (event.text.text[1] & 0xC0) == 0x80
-				&& (event.text.text[1] & 0xC0) == 0x80) {
+				(event.text.text[0] & 0xF8) == 0xF0 && (event.text.text[1] & 0xC0) == 0x80 && (event.text.text[2] & 0xC0) == 0x80
+				&& (event.text.text[3] & 0xC0) == 0x80) {
 			unicode = ((event.text.text[0] & 0x07) << 18) | ((event.text.text[1] & 0x3F) << 12) | ((event.text.text[2] & 0x3F) << 6)
 					  | ((event.text.text[3] & 0x3F));
 		} else {    // Invalid UTF-8

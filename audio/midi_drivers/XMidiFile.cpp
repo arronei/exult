@@ -1051,6 +1051,7 @@ int XMidiFile::ConvertEvent(const int time, const unsigned char status, IDataSou
 
 	// Handling for patch change mt32 conversion, probably should go elsewhere
 	if ((status >> 4) == 0xC && (status & 0xF) != 9 && convert_type != XMIDIFILE_CONVERT_NOCONVERSION) {
+		data &= 0x7F;
 		if (convert_type == XMIDIFILE_CONVERT_MT32_TO_GM) {
 			data = mt32asgm[data];
 		} else if (convert_type == XMIDIFILE_CONVERT_GM_TO_MT32) {
