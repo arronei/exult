@@ -174,6 +174,9 @@ int TextScroller::show_line(Game_window* gwin, int left, int right, int y, int i
 
 	while (*ptr) {
 		if (!strncmp(ptr, "\\P", 2)) {
+			if (*(ptr + 2) == 0) {
+				break;    // Malformed: line ends with "\P" and no frame number.
+			}
 			const int pix = *(ptr + 2) - '0';
 			ptr += 3;
 			Shape_frame* frame = shapes->get_frame(pix);

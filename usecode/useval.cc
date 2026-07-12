@@ -468,6 +468,7 @@ bool Usecode_value::restore(IDataSource* in) {
 		nm[len]           = 0;
 		Game_window* gwin = Game_window::get_instance();
 		clssym            = gwin->get_usecode()->get_class(nm);
+		delete[] nm;
 		return true;
 	}
 	case string_type: {

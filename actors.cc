@@ -641,9 +641,12 @@ bool Actor::ready_best_weapon() {
 		remove2 = nullptr;
 	}
 	// A readied spellbook must never be dropped on the floor.
-	// If there's no room to store it when swapping for a weapon, keep the spellbook readied
-	// and skip the weapon swap.
-	if (wtype == both_hands && (is_unstorable_spellbook(remove1) || is_unstorable_spellbook(remove2))) {
+	// If there's no room to store it, and the off-hand won't be free for it
+	// to be re-readied (two-handed weapon coming in, or the right hand is
+	// occupied by something other than the incoming weapon), keep the
+	// spellbook readied and skip the weapon swap.
+	if ((wtype == both_hands || (spots[rhand] && spots[rhand] != best))
+		&& (is_unstorable_spellbook(remove1) || is_unstorable_spellbook(remove2))) {
 		ready_best_shield();
 		return false;    // Don't displace the spellbook.
 	}

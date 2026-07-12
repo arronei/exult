@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 File_data::File_data(const File_spec& spec) {
 	file  = U7FileManager::get_ptr()->get_file_object(spec, true);
-	patch = !spec.name.compare(1, sizeof("<PATCH>/") - 1, "<PATCH>/");
+	patch = !spec.name.compare(0, sizeof("<PATCH>/") - 1, "<PATCH>/");
 	if (file) {
 		count = file->number_of_objects();
 	} else {

@@ -60,7 +60,7 @@ public:
 			cnt = num_extra_spots;
 		}
 		atts.resize(cnt);
-		for (int i = first; i < cnt; ++i) {
+		for (int i = 0; i < cnt; ++i) {
 			atts[i] = allatts[first + i];
 		}
 	}

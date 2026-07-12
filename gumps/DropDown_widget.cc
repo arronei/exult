@@ -208,7 +208,7 @@ bool DropDown_widget::key_down(SDL_Keycode chr, SDL_Keycode unicode) {
 	case SDLK_DOWN:
 		// move selection down
 		{
-			int newsel = std::min<int>(selections.size(), std::max(0, list->getselection() + 1));
+			int newsel = std::min<int>(int(selections.size()) - 1, std::max(0, list->getselection() + 1));
 			list->setselection(newsel);
 			set_frame(newsel);
 		}

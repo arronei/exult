@@ -266,12 +266,9 @@ void ConfigSetting_widget::setdefault() {
 		auto& child = children[i + 1];
 
 		// set selection on child to default value
-		int def = setting.choices.size();
-		if (def == -1) {
-			def = setting.find_choice(setting.default_value);
-			if (child && def != -1) {
-				child->setselection(def);
-			}
+		int def = setting.find_choice(setting.default_value);
+		if (child && def != -1) {
+			child->setselection(def);
 		}
 	}
 }

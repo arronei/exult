@@ -277,12 +277,7 @@ int main(int argc, char* argv[]) {
 	char* shapefile = argv[1];
 
 	if (argc > 2) {
-		const int numframefiles = argc - 2;
-		char*     framefiles[255];
-		for (int i = 0; i < numframefiles; i++) {
-			framefiles[i] = argv[i + 2];
-		}
-		merge_frames(shapefile, framefiles, numframefiles);
+		merge_frames(shapefile, argv + 2, argc - 2);
 	} else {
 		split_shape(shapefile);
 	}
