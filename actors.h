@@ -99,7 +99,7 @@ public:
 
 protected:
 	// Party positions
-	static const short party_pos[4][10][2];
+	static const short party_pos[4][11][2];
 
 	Attack_mode attack_mode;
 	// A frame sequence for each dir.:

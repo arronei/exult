@@ -101,15 +101,15 @@ extern bool combat_trace;
 //
 // Please Don't Touch - Colourless
 //
-const short Actor::party_pos[4][10][2] = {
+const short Actor::party_pos[4][11][2] = {
 		// North Facing
-		{ {-2, 2},  {2, 2},  {0, 4},  {-4, 4},  {4, 4},  {-2, 6},  {2, 6},  {0, 8},  {-4, 8},  {4, 8}},
+		{ {-2, 2},  {2, 2},  {0, 4},  {-4, 4},  {4, 4},  {-2, 6},  {2, 6},  {0, 8},  {-4, 8},  {4, 8},  {-2, 10}},
 		// East Facing,
-		{{-2, -2}, {-2, 2}, {-4, 0}, {-4, -4}, {-4, 4}, {-6, -2}, {-6, 2}, {-8, 0}, {-8, -4}, {-8, 4}},
+		{{-2, -2}, {-2, 2}, {-4, 0}, {-4, -4}, {-4, 4}, {-6, -2}, {-6, 2}, {-8, 0}, {-8, -4}, {-8, 4}, {-10, -2}},
 		// South Facing
-		{{-2, -2}, {2, -2}, {0, -4}, {-4, -4}, {4, -4}, {-2, -6}, {2, -6}, {0, -8}, {-4, -8}, {4, -8}},
+		{{-2, -2}, {2, -2}, {0, -4}, {-4, -4}, {4, -4}, {-2, -6}, {2, -6}, {0, -8}, {-4, -8}, {4, -8}, {-2, -10}},
 		// West Facing
-		{ {2, -2},  {2, 2},  {4, 0},  {4, -4},  {4, 4},  {6, -2},  {6, 2},  {8, 0},  {8, -4},  {8, 4}}
+		{ {2, -2},  {2, 2},  {4, 0},  {4, -4},  {4, 4},  {6, -2},  {6, 2},  {8, 0},  {8, -4},  {8, 4},  {10, -2}}
 };
 
 //	Actor frame to substitute when a frame is empty (as some are):
@@ -1425,8 +1425,8 @@ void Actor::follow(const Actor* leader) {
 		}
 		//		cout << "Follow:  Leader is stopped" << endl;
 		// +++++For formation, why not get correct positions?
-		static const int xoffs[10] = {-1, 1, -2, 2, -3, 3, -4, 4, -5, 5};
-		static const int yoffs[10] = {1, -1, 2, -2, 3, -3, 4, -4, 5, -5};
+		static const int xoffs[11] = {-1, 1, -2, 2, -3, 3, -4, 4, -5, 5, -6};
+		static const int yoffs[11] = {1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6};
 		goal.tx += xoffs[party_id] + 1 - rand() % 3;
 		goal.ty += yoffs[party_id] + 1 - rand() % 3;
 		dist = 1;
